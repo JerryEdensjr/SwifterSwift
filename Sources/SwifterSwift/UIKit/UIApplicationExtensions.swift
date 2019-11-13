@@ -19,8 +19,11 @@ public extension UIApplication {
     /// - testFlight: Application is installed from Test Flight.
     /// - appStore: Application is installed from the App Store.
     enum Environment {
+        /// SwifterSwift: Application is running in debug mode.
         case debug
+        /// SwifterSwift: Application is installed from Test Flight.
         case testFlight
+        /// SwifterSwift: Application is installed from the App Store.
         case appStore
     }
 

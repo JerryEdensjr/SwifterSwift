@@ -100,8 +100,7 @@ public extension Int {
 // MARK: - Methods
 public extension Int {
 
-    /// SwifterSwift: check if given integer prime or not.
-    /// Warning: Using big numbers can be computationally expensive!
+    /// SwifterSwift: check if given integer prime or not. Warning: Using big numbers can be computationally expensive!
     /// - Returns: true or false depending on prime-ness
     func isPrime() -> Bool {
         // To improve speed on latter loop :)
@@ -122,7 +121,7 @@ public extension Int {
 
     /// SwifterSwift: Roman numeral string from integer (if applicable).
     ///
-    ///10.romanNumeral() -> "X"
+    ///     10.romanNumeral() -> "X"
     ///
     /// - Returns: The roman numeral string.
     func romanNumeral() -> String? {
@@ -171,17 +170,19 @@ func ** (lhs: Int, rhs: Int) -> Double {
     return pow(Double(lhs), Double(rhs))
 }
 
+// swiftlint:disable identifier_name
 prefix operator √
 /// SwifterSwift: Square root of integer.
 ///
 /// - Parameter int: integer value to find square root for
 /// - Returns: square root of given integer.
-// swiftlint:disable:next identifier_name
 public prefix func √ (int: Int) -> Double {
     // http://nshipster.com/swift-operators/
     return sqrt(Double(int))
 }
+// swiftlint:enable identifier_name
 
+// swiftlint:disable identifier_name
 infix operator ±
 /// SwifterSwift: Tuple of plus-minus operation.
 ///
@@ -189,19 +190,20 @@ infix operator ±
 ///   - lhs: integer number.
 ///   - rhs: integer number.
 /// - Returns: tuple of plus-minus operation (example: 2 ± 3 -> (5, -1)).
-// swiftlint:disable:next identifier_name
 func ± (lhs: Int, rhs: Int) -> (Int, Int) {
     // http://nshipster.com/swift-operators/
     return (lhs + rhs, lhs - rhs)
 }
+// swiftlint:enable identifier_name
 
+// swiftlint:disable identifier_name
 prefix operator ±
 /// SwifterSwift: Tuple of plus-minus operation.
 ///
 /// - Parameter int: integer number
 /// - Returns: tuple of plus-minus operation (example: ± 2 -> (2, -2)).
-// swiftlint:disable:next identifier_name
 public prefix func ± (int: Int) -> (Int, Int) {
     // http://nshipster.com/swift-operators/
     return 0 ± int
 }
+// swiftlint:enable identifier_name

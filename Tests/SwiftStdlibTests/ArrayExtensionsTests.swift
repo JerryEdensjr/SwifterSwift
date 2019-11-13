@@ -8,16 +8,6 @@
 import XCTest
 @testable import SwifterSwift
 
-private struct Person: Equatable {
-    var name: String
-    var age: Int?
-
-    static func == (lhs: Person, rhs: Person) -> Bool {
-        return lhs.name == rhs.name && lhs.age == rhs.age
-    }
-
-}
-
 final class ArrayExtensionsTests: XCTestCase {
 
     func testPrepend() {
@@ -44,30 +34,6 @@ final class ArrayExtensionsTests: XCTestCase {
         var swappedEmptyArray = emptyArray
         swappedEmptyArray.safeSwap(from: 1, to: 3)
         XCTAssertEqual(swappedEmptyArray, emptyArray)
-    }
-
-    func testKeyPathSorted() {
-        let array = [Person(name: "James", age: 32), Person(name: "Wade", age: 36), Person(name: "Rose", age: 29)]
-
-        XCTAssertEqual(array.sorted(by: \Person.name), [Person(name: "James", age: 32), Person(name: "Rose", age: 29), Person(name: "Wade", age: 36)])
-        XCTAssertEqual(array.sorted(by: \Person.name, ascending: false), [Person(name: "Wade", age: 36), Person(name: "Rose", age: 29), Person(name: "James", age: 32)])
-        // Testing Optional keyPath
-        XCTAssertEqual(array.sorted(by: \Person.age), [Person(name: "Rose", age: 29), Person(name: "James", age: 32), Person(name: "Wade", age: 36)])
-        XCTAssertEqual(array.sorted(by: \Person.age, ascending: false), [Person(name: "Wade", age: 36), Person(name: "James", age: 32), Person(name: "Rose", age: 29)])
-
-        // Testing Mutating
-        var mutableArray = [Person(name: "James", age: 32), Person(name: "Wade", age: 36), Person(name: "Rose", age: 29)]
-
-        mutableArray.sort(by: \Person.name)
-        XCTAssertEqual(mutableArray, [Person(name: "James", age: 32), Person(name: "Rose", age: 29), Person(name: "Wade", age: 36)])
-
-        // Testing Mutating Optional keyPath
-        mutableArray.sort(by: \Person.age)
-        XCTAssertEqual(mutableArray, [Person(name: "Rose", age: 29), Person(name: "James", age: 32), Person(name: "Wade", age: 36)])
-
-        // Testing nil path
-        let nilArray = [Person(name: "James", age: nil), Person(name: "Wade", age: nil)]
-        XCTAssertEqual(nilArray.sorted(by: \Person.age), [Person(name: "James", age: nil), Person(name: "Wade", age: nil)])
     }
 
     func testRemoveAll() {
@@ -101,4 +67,13 @@ final class ArrayExtensionsTests: XCTestCase {
         XCTAssertEqual(["h", "e", "l", "l", "o"].withoutDuplicates(), ["h", "e", "l", "o"])
     }
 
+    func testWithoutDuplicatesUsingKeyPath() {
+        let array = [Person(name: "Wade", age: 20, location: Location(city: "London")), Person(name: "James", age: 32), Person(name: "James", age: 36), Person(name: "Rose", age: 29), Person(name: "James", age: 72, location: Location(city: "Moscow")), Person(name: "Rose", age: 56), Person(name: "Wade", age: 22, location: Location(city: "Prague"))]
+        let arrayWithoutDuplicatesHashable = array.withoutDuplicates(keyPath: \.name)
+        let arrayWithoutDuplicatesHashablePrepared = [Person(name: "Wade", age: 20, location: Location(city: "London")), Person(name: "James", age: 32), Person(name: "Rose", age: 29)]
+        XCTAssertEqual(arrayWithoutDuplicatesHashable, arrayWithoutDuplicatesHashablePrepared)
+        let arrayWithoutDuplicatesNHashable = array.withoutDuplicates(keyPath: \.location)
+        let arrayWithoutDuplicatesNHashablePrepared = [Person(name: "Wade", age: 20, location: Location(city: "London")), Person(name: "James", age: 32), Person(name: "James", age: 72, location: Location(city: "Moscow")), Person(name: "Wade", age: 22, location: Location(city: "Prague"))]
+        XCTAssertEqual(arrayWithoutDuplicatesNHashable, arrayWithoutDuplicatesNHashablePrepared)
+    }
 }

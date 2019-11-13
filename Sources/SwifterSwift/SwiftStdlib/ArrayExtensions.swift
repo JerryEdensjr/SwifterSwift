@@ -33,54 +33,6 @@ public extension Array {
         guard startIndex..<endIndex ~= otherIndex else { return }
         swapAt(index, otherIndex)
     }
-
-    /// SwifterSwift: Returns a sorted array based on an optional keypath.
-    ///
-    /// - Parameter path: Key path to sort. The key path type must be Comparable.
-    /// - Parameter ascending: If order must be ascending.
-    /// - Returns: Sorted array based on keyPath.
-    func sorted<T: Comparable>(by path: KeyPath<Element, T?>, ascending: Bool = true) -> [Element] {
-        return sorted(by: { (lhs, rhs) -> Bool in
-            guard let lhsValue = lhs[keyPath: path], let rhsValue = rhs[keyPath: path] else { return false }
-            return ascending ? (lhsValue < rhsValue) : (lhsValue > rhsValue)
-        })
-    }
-
-    /// SwifterSwift: Returns a sorted array based on a keypath.
-    ///
-    /// - Parameter path: Key path to sort. The key path type must be Comparable.
-    /// - Parameter ascending: If order must be ascending.
-    /// - Returns: Sorted array based on keyPath.
-    func sorted<T: Comparable>(by path: KeyPath<Element, T>, ascending: Bool = true) -> [Element] {
-        return sorted(by: { (lhs, rhs) -> Bool in
-            return ascending ? (lhs[keyPath: path] < rhs[keyPath: path]) : (lhs[keyPath: path] > rhs[keyPath: path])
-        })
-    }
-
-    /// SwifterSwift: Sort the array based on an optional keypath.
-    ///
-    /// - Parameters:
-    ///   - path: Key path to sort, must be Comparable.
-    ///   - ascending: whether order is ascending or not.
-    /// - Returns: self after sorting.
-    @discardableResult
-    mutating func sort<T: Comparable>(by path: KeyPath<Element, T?>, ascending: Bool = true) -> [Element] {
-        self = sorted(by: path, ascending: ascending)
-        return self
-    }
-
-    /// SwifterSwift: Sort the array based on a keypath.
-    ///
-    /// - Parameters:
-    ///   - path: Key path to sort, must be Comparable.
-    ///   - ascending: whether order is ascending or not.
-    /// - Returns: self after sorting.
-    @discardableResult
-    mutating func sort<T: Comparable>(by path: KeyPath<Element, T>, ascending: Bool = true) -> [Element] {
-        self = sorted(by: path, ascending: ascending)
-        return self
-    }
-
 }
 
 // MARK: - Methods (Equatable)
@@ -146,4 +98,24 @@ public extension Array where Element: Equatable {
         }
     }
 
+    /// SwifterSwift: Returns an array with all duplicate elements removed using KeyPath to compare.
+    ///
+    /// - Parameter path: Key path to compare, the value must be Equatable.
+    /// - Returns: an array of unique elements.
+    func withoutDuplicates<E: Equatable>(keyPath path: KeyPath<Element, E>) -> [Element] {
+        return reduce(into: [Element]()) { (result, element) in
+            if !result.contains { $0[keyPath: path] == element[keyPath: path] } {
+                result.append(element)
+            }
+        }
+    }
+
+    /// SwifterSwift: Returns an array with all duplicate elements removed using KeyPath to compare.
+    ///
+    /// - Parameter path: Key path to compare, the value must be Hashable.
+    /// - Returns: an array of unique elements.
+    func withoutDuplicates<E: Hashable>(keyPath path: KeyPath<Element, E>) -> [Element] {
+        var set = Set<E>()
+        return filter { set.insert($0[keyPath: path]).inserted }
+    }
 }
