@@ -281,6 +281,21 @@ public extension UIImage {
         return image
     }
 
+    /// SwifterSwift: Base 64 encoded PNG data of the image.
+    ///
+    /// - returns: Base 64 encoded PNG data of the image as a String.
+    func pngBase64String() -> String? {
+        return pngData()?.base64EncodedString()
+    }
+
+    /// SwifterSwift: Base 64 encoded JPEG data of the image.
+    ///
+    /// - parameter compressionQuality: The quality of the resulting JPEG image, expressed as a value from 0.0 to 1.0. The value 0.0 represents the maximum compression (or lowest quality) while the value 1.0 represents the least compression (or best quality).
+    /// - returns: Base 64 encoded JPEG data of the image as a String.
+    func jpegBase64String(compressionQuality: CGFloat) -> String? {
+        return jpegData(compressionQuality: compressionQuality)?.base64EncodedString()
+    }
+
 }
 
 // MARK: - Initializers
@@ -322,9 +337,9 @@ public extension UIImage {
     /// SwifterSwift: Create a new image from a URL
     ///
     /// - Important:
-    /// Use this method to convert data:// URLs to UIImage objects.
-    /// Don't use this synchronous initializer to request network-based URLs. For network-based URLs, this method can block the current thread for tens of seconds on a slow network, resulting in a poor user experience, and in iOS, may cause your app to be terminated.
-    /// Instead, for non-file URLs, consider using this in an asynchronous way, using `dataTask(with:completionHandler:)` method of the URLSession class or a library such as `AlamofireImage`, `Kingfisher`, `SDWebImage`, or others to perform asynchronous network image loading.
+    ///   Use this method to convert data:// URLs to UIImage objects.
+    ///   Don't use this synchronous initializer to request network-based URLs. For network-based URLs, this method can block the current thread for tens of seconds on a slow network, resulting in a poor user experience, and in iOS, may cause your app to be terminated.
+    ///   Instead, for non-file URLs, consider using this in an asynchronous way, using `dataTask(with:completionHandler:)` method of the URLSession class or a library such as `AlamofireImage`, `Kingfisher`, `SDWebImage`, or others to perform asynchronous network image loading.
     /// - Parameters:
     ///   - url: a `URL`, representing the image location
     ///   - scale: The scale factor to assume when interpreting the image data created from the URL. Applying a scale factor of 1.0 results in an image whose size matches the pixel-based dimensions of the image. Applying a different scale factor changes the size of the image as reported by the `size` property.
