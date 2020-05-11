@@ -60,8 +60,9 @@ public extension UIImage {
     /// - Returns: cropped UIImage
     func cropped(to rect: CGRect) -> UIImage {
         guard rect.size.width <= size.width && rect.size.height <= size.height else { return self }
-        guard let image: CGImage = cgImage?.cropping(to: rect) else { return self }
-        return UIImage(cgImage: image)
+        let scaledRect = rect.applying(CGAffineTransform(scaleX: scale, y: scale))
+        guard let image = cgImage?.cropping(to: scaledRect) else { return self }
+        return UIImage(cgImage: image, scale: scale, orientation: imageOrientation)
     }
 
     /// SwifterSwift: UIImage scaled to height with respect to aspect ratio.
@@ -103,7 +104,7 @@ public extension UIImage {
     ///
     /// - Parameter angle: The angle measurement by which to rotate the image.
     /// - Returns: A new image rotated by the given angle.
-    @available(iOS 10.0, tvOS 10.0, watchOS 3.0, *)
+    @available(tvOS 10.0, watchOS 3.0, *)
     func rotated(by angle: Measurement<UnitAngle>) -> UIImage? {
         let radians = CGFloat(angle.converted(to: .radians).value)
 
@@ -166,7 +167,7 @@ public extension UIImage {
     func filled(withColor color: UIColor) -> UIImage {
 
         #if !os(watchOS)
-        if #available(iOS 10, tvOS 10, *) {
+        if #available(tvOS 10.0, *) {
             let format = UIGraphicsImageRendererFormat()
             format.scale = scale
             let renderer = UIGraphicsImageRenderer(size: size, format: format)
@@ -205,7 +206,7 @@ public extension UIImage {
         let drawRect = CGRect(origin: .zero, size: size)
 
         #if !os(watchOS)
-        if #available(iOS 10.0, tvOS 10.0, *) {
+        if #available(tvOS 10.0, *) {
             let format = UIGraphicsImageRendererFormat()
             format.scale = scale
             return UIGraphicsImageRenderer(size: size, format: format).image { context in
@@ -235,7 +236,7 @@ public extension UIImage {
     func withBackgroundColor(_ backgroundColor: UIColor) -> UIImage {
 
         #if !os(watchOS)
-        if #available(iOS 10.0, tvOS 10.0, *) {
+        if #available(tvOS 10.0, *) {
             let format = UIGraphicsImageRendererFormat()
             format.scale = scale
             return UIGraphicsImageRenderer(size: size, format: format).image { context in

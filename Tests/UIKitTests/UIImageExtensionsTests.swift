@@ -70,6 +70,21 @@ final class UIImageExtensionsTests: XCTestCase {
 
         let equalWidth = image.cropped(to: CGRect(x: 0, y: 0, width: 20, height: 18))
         XCTAssertNotEqual(image, equalWidth)
+
+        guard let cgImage = image.cgImage else {
+            XCTFail("Get cgImage from image failed")
+            return
+        }
+
+        let imageWithScale = UIImage(cgImage: cgImage, scale: 2.0, orientation: .up)
+        cropped = imageWithScale.cropped(to: CGRect(x: 0, y: 0, width: 15, height: 15))
+        XCTAssertEqual(imageWithScale, cropped)
+
+        cropped = imageWithScale.cropped(to: CGRect(x: 0, y: 0, width: 5, height: 6))
+        XCTAssertEqual(imageWithScale.scale, cropped.scale)
+
+        XCTAssertEqual(10, cropped.size.width * cropped.scale)
+        XCTAssertEqual(12, cropped.size.height * cropped.scale)
     }
 
     func testScaledToHeight() {
@@ -90,7 +105,7 @@ final class UIImageExtensionsTests: XCTestCase {
         XCTAssertEqual(scaledImage!.size.width, 300, accuracy: 0.1)
     }
 
-    @available(iOS 10.0, tvOS 10.0, watchOS 3.0, *)
+    @available(tvOS 10.0, watchOS 3.0, *)
     func testRotatedByMeasurement() {
         let bundle = Bundle.init(for: UIImageExtensionsTests.self)
         let image = UIImage(named: "TestImage", in: bundle, compatibleWith: nil)!

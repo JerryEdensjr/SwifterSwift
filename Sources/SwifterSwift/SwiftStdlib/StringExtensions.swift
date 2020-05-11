@@ -601,28 +601,24 @@ public extension String {
         return self[self.index(startIndex, offsetBy: index)]
     }
 
-    /// SwifterSwift: Safely subscript string within a half-open range.
+    /// SwifterSwift: Safely subscript string within a given range.
     ///
-    ///		"Hello World!"[safe: 6..<11] -> "World"
-    ///		"Hello World!"[safe: 21..<110] -> nil
+    ///        "Hello World!"[safe: 6..<11] -> "World"
+    ///        "Hello World!"[safe: 21..<110] -> nil
     ///
-    /// - Parameter range: Half-open range.
-    subscript(safe range: CountableRange<Int>) -> String? {
-        guard let lowerIndex = index(startIndex, offsetBy: max(0, range.lowerBound), limitedBy: endIndex) else { return nil }
-        guard let upperIndex = index(lowerIndex, offsetBy: range.upperBound - range.lowerBound, limitedBy: endIndex) else { return nil }
-        return String(self[lowerIndex..<upperIndex])
-    }
+    ///        "Hello World!"[safe: 6...11] -> "World!"
+    ///        "Hello World!"[safe: 21...110] -> nil
+    ///
+    /// - Parameter range: Range expression.
+    subscript<R>(safe range: R) -> String? where R: RangeExpression, R.Bound == Int {
+        let range = range.relative(to: Int.min..<Int.max)
+        guard range.lowerBound >= 0,
+            let lowerIndex = index(startIndex, offsetBy: range.lowerBound, limitedBy: endIndex),
+            let upperIndex = index(startIndex, offsetBy: range.upperBound, limitedBy: endIndex) else {
+                return nil
+        }
 
-    /// SwifterSwift: Safely subscript string within a closed range.
-    ///
-    ///		"Hello World!"[safe: 6...11] -> "World!"
-    ///		"Hello World!"[safe: 21...110] -> nil
-    ///
-    /// - Parameter range: Closed range.
-    subscript(safe range: ClosedRange<Int>) -> String? {
-        guard let lowerIndex = index(startIndex, offsetBy: max(0, range.lowerBound), limitedBy: endIndex) else { return nil }
-        guard let upperIndex = index(lowerIndex, offsetBy: range.upperBound - range.lowerBound, limitedBy: endIndex) else { return nil }
-        return String(self[lowerIndex...upperIndex])
+        return String(self[lowerIndex..<upperIndex])
     }
 
     #if os(iOS) || os(macOS)

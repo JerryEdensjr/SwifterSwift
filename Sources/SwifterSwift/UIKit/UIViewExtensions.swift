@@ -111,7 +111,7 @@ public extension UIView {
 
     /// SwifterSwift: Check if view is in RTL format.
     var isRightToLeft: Bool {
-        if #available(iOS 10.0, *, tvOS 10.0, *) {
+        if #available(tvOS 10.0, *) {
             return effectiveUserInterfaceLayoutDirection == .rightToLeft
         } else {
             return false
@@ -203,7 +203,6 @@ public extension UIView {
         }
     }
 
-    // swiftlint:disable identifier_name
     /// SwifterSwift: x origin of view.
     var x: CGFloat {
         get {
@@ -213,9 +212,7 @@ public extension UIView {
             frame.origin.x = newValue
         }
     }
-    // swiftlint:enable identifier_name
 
-    // swiftlint:disable identifier_name
     /// SwifterSwift: y origin of view.
     var y: CGFloat {
         get {
@@ -225,7 +222,6 @@ public extension UIView {
             frame.origin.y = newValue
         }
     }
-    // swiftlint:enable identifier_name
 
 }
 
