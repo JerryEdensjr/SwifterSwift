@@ -1,19 +1,12 @@
-//
-//  UITextFieldExtensionsTests.swift
-//  SwifterSwift
-//
-//  Created by Omar Albeik on 2/15/17.
-//  Copyright © 2017 SwifterSwift
-//
+// UITextFieldExtensionsTests.swift - Copyright 2020 SwifterSwift
 
-import XCTest
 @testable import SwifterSwift
+import XCTest
 
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
 
 final class UITextFieldExtensionsTests: XCTestCase {
-
     func testIsEmpty() {
         let textField = UITextField()
         XCTAssert(textField.isEmpty)
@@ -54,7 +47,6 @@ final class UITextFieldExtensionsTests: XCTestCase {
         tf3.textType = .generic
         XCTAssertEqual(tf3.textType, .generic)
         XCTAssertFalse(tf3.isSecureTextEntry)
-
     }
 
     func testHasValidEmail() {
@@ -124,7 +116,10 @@ final class UITextFieldExtensionsTests: XCTestCase {
 
         textField.placeholder = nil
         textField.setPlaceHolderTextColor(.yellow)
-        let emptyColor = textField.attributedPlaceholder?.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? UIColor
+        let emptyColor = textField.attributedPlaceholder?.attribute(
+            .foregroundColor,
+            at: 0,
+            effectiveRange: nil) as? UIColor
         XCTAssertNil(emptyColor)
     }
 
@@ -135,16 +130,32 @@ final class UITextFieldExtensionsTests: XCTestCase {
         XCTAssertEqual(textfield.leftView?.frame.width, 40)
     }
 
-    func testAddPaddingImageIcon() {
+    func testAddPaddingRight() {
+        let textfield = UITextField()
+        textfield.frame = CGRect(x: 0, y: 0, width: 100, height: 30)
+        textfield.addPaddingRight(40)
+        XCTAssertEqual(textfield.rightView?.frame.width, 40)
+    }
+
+    func testAddPaddingImageLeftIcon() {
         let textfield = UITextField()
         textfield.frame = CGRect(x: 0, y: 0, width: 100, height: 44)
 
-        let bundle = Bundle.init(for: UIImageExtensionsTests.self)
+        let bundle = Bundle(for: UIImageExtensionsTests.self)
         let image = UIImage(named: "TestImage", in: bundle, compatibleWith: nil)!
         textfield.addPaddingLeftIcon(image, padding: 5)
         XCTAssertEqual(textfield.leftView?.frame.width, image.size.width + 5)
     }
 
+    func testAddPaddingImageRightIcon() {
+        let textfield = UITextField()
+        textfield.frame = CGRect(x: 0, y: 0, width: 100, height: 44)
+
+        let bundle = Bundle(for: UIImageExtensionsTests.self)
+        let image = UIImage(named: "TestImage", in: bundle, compatibleWith: nil)!
+        textfield.addPaddingRightIcon(image, padding: 5)
+        XCTAssertEqual(textfield.rightView?.frame.width, image.size.width + 5)
+    }
 }
 
 #endif

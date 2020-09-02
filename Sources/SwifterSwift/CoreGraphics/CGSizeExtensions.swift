@@ -1,20 +1,15 @@
-//
-//  CGSizeExtensions.swift
-//  SwifterSwift
-//
-//  Created by Omar Albeik on 8/22/16.
-//  Copyright © 2016 SwifterSwift
-//
+// CGSizeExtensions.swift - Copyright 2020 SwifterSwift
 
 #if canImport(CoreGraphics)
 import CoreGraphics
 
 // MARK: - Methods
-public extension CGSize {
 
+public extension CGSize {
     /// SwifterSwift: Returns the aspect ratio.
     var aspectRatio: CGFloat {
-        return height == 0 ? 0 : width / height
+        guard height != 0 else { return 0 }
+        return width / height
     }
 
     /// SwifterSwift: Returns width or height, whichever is the bigger value.
@@ -26,12 +21,11 @@ public extension CGSize {
     var minDimension: CGFloat {
         return min(width, height)
     }
-
 }
 
 // MARK: - Methods
-public extension CGSize {
 
+public extension CGSize {
     /// SwifterSwift: Aspect fit CGSize.
     ///
     ///     let rect = CGSize(width: 120, height: 80)
@@ -61,12 +55,11 @@ public extension CGSize {
         let aHeight = min(height * minRatio, boundingSize.height)
         return CGSize(width: aWidth, height: aHeight)
     }
-
 }
 
 // MARK: - Operators
-public extension CGSize {
 
+public extension CGSize {
     /// SwifterSwift: Add two CGSize
     ///
     ///     let sizeA = CGSize(width: 5, height: 10)
@@ -82,9 +75,23 @@ public extension CGSize {
         return CGSize(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
     }
 
-    /// SwifterSwift: Add a CGSize to self.
+    /// SwifterSwift: Add a tuple to CGSize.
     ///
     ///     let sizeA = CGSize(width: 5, height: 10)
+    ///     let result = sizeA + (5, 4)
+    ///     // result = CGSize(width: 10, height: 14)
+    ///
+    /// - Parameters:
+    ///   - lhs: CGSize to add to.
+    ///   - tuple: tuple value.
+    /// - Returns: The result comes from the addition of the given CGSize and tuple.
+    static func + (lhs: CGSize, tuple: (width: CGFloat, height: CGFloat)) -> CGSize {
+        return CGSize(width: lhs.width + tuple.width, height: lhs.height + tuple.height)
+    }
+
+    /// SwifterSwift: Add a CGSize to self.
+    ///
+    ///     var sizeA = CGSize(width: 5, height: 10)
     ///     let sizeB = CGSize(width: 3, height: 4)
     ///     sizeA += sizeB
     ///     // sizeA = CGPoint(width: 8, height: 14)
@@ -95,6 +102,20 @@ public extension CGSize {
     static func += (lhs: inout CGSize, rhs: CGSize) {
         lhs.width += rhs.width
         lhs.height += rhs.height
+    }
+
+    /// SwifterSwift: Add a tuple to self.
+    ///
+    ///     var sizeA = CGSize(width: 5, height: 10)
+    ///     sizeA += (3, 4)
+    ///     // result = CGSize(width: 8, height: 14)
+    ///
+    /// - Parameters:
+    ///   - lhs: self.
+    ///   - tuple: tuple value.
+    static func += (lhs: inout CGSize, tuple: (width: CGFloat, height: CGFloat)) {
+        lhs.width += tuple.width
+        lhs.height += tuple.height
     }
 
     /// SwifterSwift: Subtract two CGSize
@@ -112,9 +133,23 @@ public extension CGSize {
         return CGSize(width: lhs.width - rhs.width, height: lhs.height - rhs.height)
     }
 
-    /// SwifterSwift: Subtract a CGSize from self.
+    /// SwifterSwift: Subtract a tuple from CGSize.
     ///
     ///     let sizeA = CGSize(width: 5, height: 10)
+    ///     let result = sizeA - (3, 2)
+    ///     // result = CGSize(width: 2, height: 8)
+    ///
+    /// - Parameters:
+    ///   - lhs: CGSize to subtract from.
+    ///   - tuple: tuple value.
+    /// - Returns: The result comes from the subtract of the given CGSize and tuple.
+    static func - (lhs: CGSize, tuple: (width: CGFloat, heoght: CGFloat)) -> CGSize {
+        return CGSize(width: lhs.width - tuple.width, height: lhs.height - tuple.heoght)
+    }
+
+    /// SwifterSwift: Subtract a CGSize from self.
+    ///
+    ///     var sizeA = CGSize(width: 5, height: 10)
     ///     let sizeB = CGSize(width: 3, height: 4)
     ///     sizeA -= sizeB
     ///     // sizeA = CGPoint(width: 2, height: 6)
@@ -125,6 +160,20 @@ public extension CGSize {
     static func -= (lhs: inout CGSize, rhs: CGSize) {
         lhs.width -= rhs.width
         lhs.height -= rhs.height
+    }
+
+    /// SwifterSwift: Subtract a tuple from self.
+    ///
+    ///     var sizeA = CGSize(width: 5, height: 10)
+    ///     sizeA -= (2, 4)
+    ///     // result = CGSize(width: 3, height: 6)
+    ///
+    /// - Parameters:
+    ///   - lhs: self.
+    ///   - tuple: tuple value.
+    static func -= (lhs: inout CGSize, tuple: (width: CGFloat, height: CGFloat)) {
+        lhs.width -= tuple.width
+        lhs.height -= tuple.height
     }
 
     /// SwifterSwift: Multiply two CGSize
@@ -172,7 +221,7 @@ public extension CGSize {
 
     /// SwifterSwift: Multiply self with a CGSize.
     ///
-    ///     let sizeA = CGSize(width: 5, height: 10)
+    ///     var sizeA = CGSize(width: 5, height: 10)
     ///     let sizeB = CGSize(width: 3, height: 4)
     ///     sizeA *= sizeB
     ///     // result = CGSize(width: 15, height: 40)
@@ -187,7 +236,7 @@ public extension CGSize {
 
     /// SwifterSwift: Multiply self with a scalar.
     ///
-    ///     let sizeA = CGSize(width: 5, height: 10)
+    ///     var sizeA = CGSize(width: 5, height: 10)
     ///     sizeA *= 3
     ///     // result = CGSize(width: 15, height: 30)
     ///
@@ -198,7 +247,6 @@ public extension CGSize {
         lhs.width *= scalar
         lhs.height *= scalar
     }
-
 }
 
 #endif

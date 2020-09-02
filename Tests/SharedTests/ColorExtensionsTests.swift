@@ -1,13 +1,7 @@
-//
-//  ColorExtensionsTests.swift
-//  SwifterSwift
-//
-//  Created by Ewelina on 25/01/2017.
-//  Copyright © 2017 SwifterSwift
-//
+// ColorExtensionsTests.swift - Copyright 2020 SwifterSwift
 
-import XCTest
 @testable import SwifterSwift
+import XCTest
 
 #if canImport(AppKit) || canImport(UIKit)
 
@@ -17,8 +11,8 @@ import CoreImage
 
 // swiftlint:disable:next type_body_length
 final class ColorExtensionsTests: XCTestCase {
-
     // MARK: - Test properties
+
     func testCGFloatComponents() {
         XCTAssertEqual(Color.red.cgFloatComponents.red, 1.0)
         XCTAssertEqual(Color.red.cgFloatComponents.green, 0.0)
@@ -44,6 +38,7 @@ final class ColorExtensionsTests: XCTestCase {
     }
 
     // MARK: - Test properties
+
     func testRgbComponents() {
         XCTAssertEqual(Color.red.rgbComponents.red, 255)
         XCTAssertEqual(Color.red.rgbComponents.green, 0)
@@ -92,14 +87,15 @@ final class ColorExtensionsTests: XCTestCase {
     #endif
 
     // MARK: - Test properties
+
     func testHsbaComponents() {
         var color = Color(hex: 0x00FF00, transparency: 1.0)!
-        XCTAssertEqual(CGFloat(round(1000 * color.hsbaComponents.hue) / 1000), CGFloat(round(1000 * (120/360)) / 1000))
+        XCTAssertEqual(color.hsbaComponents.hue, 120.0 / 360.0, accuracy: 0.001)
         XCTAssertEqual(color.hsbaComponents.saturation, 1.0)
         XCTAssertEqual(color.hsbaComponents.brightness, 1.0)
 
         color = Color(hex: 0x0000FF, transparency: 1.0)!
-        XCTAssertEqual(CGFloat(round(1000 * color.hsbaComponents.hue) / 1000), CGFloat(round(1000 * (240/360)) / 1000))
+        XCTAssertEqual(color.hsbaComponents.hue, 240.0 / 360.0, accuracy: 0.001)
         XCTAssertEqual(color.hsbaComponents.saturation, 1.0)
         XCTAssertEqual(color.hsbaComponents.brightness, 1.0)
 
@@ -114,17 +110,17 @@ final class ColorExtensionsTests: XCTestCase {
         XCTAssertEqual(color.hsbaComponents.brightness, 1.0)
 
         color = Color(hex: 0x123456, transparency: 1.0)!
-        XCTAssertEqual(CGFloat(round(1000 * color.hsbaComponents.hue) / 1000), CGFloat(round(1000 * (210/360)) / 1000))
+        XCTAssertEqual(color.hsbaComponents.hue, 210.0 / 360.0, accuracy: 0.001)
         XCTAssertEqual((color.hsbaComponents.saturation * 100).rounded(), 79)
         XCTAssertEqual((color.hsbaComponents.brightness * 100).rounded(), 34)
 
         color = Color(hex: 0xFCA864, transparency: 1.0)!
-        XCTAssertEqual(CGFloat(round(1000 * color.hsbaComponents.hue) / 1000), CGFloat(round(1000 * (27/360)) / 1000))
+        XCTAssertEqual(color.hsbaComponents.hue, 27.0 / 360.0, accuracy: 0.001)
         XCTAssertEqual((color.hsbaComponents.saturation * 100).rounded(), 60)
         XCTAssertEqual((color.hsbaComponents.brightness * 100).rounded(), 99)
 
         color = Color(hex: 0x1F2D3C, transparency: 1.0)!
-        XCTAssertEqual(CGFloat(round(1000 * color.hsbaComponents.hue) / 1000), CGFloat(round(1000 * (211/360)) / 1000))
+        XCTAssertEqual(color.hsbaComponents.hue, 211.0 / 360.0, accuracy: 0.001)
         XCTAssertEqual((color.hsbaComponents.saturation * 100).rounded(), 48)
         XCTAssertEqual((color.hsbaComponents.brightness * 100).rounded(), 24)
     }
@@ -234,6 +230,7 @@ final class ColorExtensionsTests: XCTestCase {
     }
 
     // MARK: - Test methods
+
     func testBlend() {
         var color1 = Color.white
         var color2 = Color.black
@@ -305,17 +302,18 @@ final class ColorExtensionsTests: XCTestCase {
     }
 
     // MARK: - Test initializers
+
     func testInit() {
         var color = Color(hex: 0xFFF)
         XCTAssertEqual(color?.rgbComponents.red, 0)
-        XCTAssertEqual(color?.rgbComponents.green, 0xf)
-        XCTAssertEqual(color?.rgbComponents.blue, 0xff)
+        XCTAssertEqual(color?.rgbComponents.green, 0xF)
+        XCTAssertEqual(color?.rgbComponents.blue, 0xFF)
         XCTAssertEqual(color?.alpha, 1.0)
 
         color = Color(hex: 0xFFFFFFF)
-        XCTAssertEqual(color?.rgbComponents.red, 0xff)
-        XCTAssertEqual(color?.rgbComponents.green, 0xff)
-        XCTAssertEqual(color?.rgbComponents.blue, 0xff)
+        XCTAssertEqual(color?.rgbComponents.red, 0xFF)
+        XCTAssertEqual(color?.rgbComponents.green, 0xFF)
+        XCTAssertEqual(color?.rgbComponents.blue, 0xFF)
         XCTAssertEqual(color?.alpha, 1.0)
 
         color = Color(hex: 0x123456, transparency: 1.0)
@@ -330,10 +328,10 @@ final class ColorExtensionsTests: XCTestCase {
         XCTAssertEqual(color?.rgbComponents.blue, 0x99)
         XCTAssertEqual(color?.alpha, 1.0)
 
-        color = Color(hex: 0xaabbcc, transparency: 0.0)
-        XCTAssertEqual(color?.rgbComponents.red, 0xaa)
-        XCTAssertEqual(color?.rgbComponents.green, 0xbb)
-        XCTAssertEqual(color?.rgbComponents.blue, 0xcc)
+        color = Color(hex: 0xAABBCC, transparency: 0.0)
+        XCTAssertEqual(color?.rgbComponents.red, 0xAA)
+        XCTAssertEqual(color?.rgbComponents.green, 0xBB)
+        XCTAssertEqual(color?.rgbComponents.blue, 0xCC)
         XCTAssertEqual(color?.alpha, 0.0)
 
         color = Color(hex: 0x1, transparency: 0.5)
@@ -423,7 +421,6 @@ final class ColorExtensionsTests: XCTestCase {
 
         let color4 = Color(red: 258, green: 258, blue: 258)
         XCTAssertNil(color4)
-
     }
 
     func testFailableInitWithComplementaryColor() {
@@ -443,7 +440,6 @@ final class ColorExtensionsTests: XCTestCase {
         XCTAssertEqual(green, 1)
         XCTAssertEqual(blue, 1)
     }
-
 }
 
 #endif

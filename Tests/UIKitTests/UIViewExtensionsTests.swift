@@ -1,20 +1,13 @@
-//
-//  UIViewExtensionsTests.swift
-//  SwifterSwift
-//
-//  Created by Omar Albeik on 2/15/17.
-//  Copyright © 2017 SwifterSwift
-//
+// UIViewExtensionsTests.swift - Copyright 2020 SwifterSwift
 
-import XCTest
 @testable import SwifterSwift
+import XCTest
 
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
 
 // swiftlint:disable:next type_body_length
 final class UIViewExtensionsTests: XCTestCase {
-
     func testBorderColor() {
         let frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         let view = UIView(frame: frame)
@@ -55,7 +48,7 @@ final class UIViewExtensionsTests: XCTestCase {
         let txtView = UITextField(frame: CGRect.zero)
         window.addSubview(txtView)
         txtView.becomeFirstResponder()
-        XCTAssertTrue(txtView.firstResponder() === txtView)
+        XCTAssert(txtView.firstResponder() === txtView)
 
         // When a subview is firstResponder
         let superView = UIView()
@@ -63,11 +56,10 @@ final class UIViewExtensionsTests: XCTestCase {
         let subView = UITextField(frame: CGRect.zero)
         superView.addSubview(subView)
         subView.becomeFirstResponder()
-        XCTAssertTrue(superView.firstResponder() === subView)
+        XCTAssert(superView.firstResponder() === subView)
 
         // When you have to find recursively
-        XCTAssertTrue(window.firstResponder() === subView)
-
+        XCTAssert(window.firstResponder() === subView)
     }
 
     func testHeight() {
@@ -101,10 +93,10 @@ final class UIViewExtensionsTests: XCTestCase {
         let frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         let view = UIView(frame: frame)
         view.layer.shadowColor = nil
-        XCTAssertNil(view.shadowColor)
-        view.shadowColor = UIColor.orange
+        XCTAssertNil(view.layerShadowColor)
+        view.layerShadowColor = UIColor.orange
         XCTAssertNotNil(view.layer.shadowColor!)
-        XCTAssertEqual(view.shadowColor, UIColor.orange)
+        XCTAssertEqual(view.layerShadowColor, UIColor.orange)
     }
 
     func testScreenshot() {
@@ -122,9 +114,9 @@ final class UIViewExtensionsTests: XCTestCase {
         let frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         let view = UIView(frame: frame)
         view.layer.shadowOffset = CGSize.zero
-        XCTAssertEqual(view.shadowOffset, CGSize.zero)
+        XCTAssertEqual(view.layerShadowOffset, CGSize.zero)
         let size = CGSize(width: 5, height: 5)
-        view.shadowOffset = size
+        view.layerShadowOffset = size
         XCTAssertEqual(view.layer.shadowOffset, size)
     }
 
@@ -132,8 +124,8 @@ final class UIViewExtensionsTests: XCTestCase {
         let frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         let view = UIView(frame: frame)
         view.layer.shadowOpacity = 0
-        XCTAssertEqual(view.shadowOpacity, 0)
-        view.shadowOpacity = 0.5
+        XCTAssertEqual(view.layerShadowOpacity, 0)
+        view.layerShadowOpacity = 0.5
         XCTAssertEqual(view.layer.shadowOpacity, 0.5)
     }
 
@@ -141,8 +133,8 @@ final class UIViewExtensionsTests: XCTestCase {
         let frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         let view = UIView(frame: frame)
         view.layer.shadowRadius = 0
-        XCTAssertEqual(view.shadowRadius, 0)
-        view.shadowRadius = 0.5
+        XCTAssertEqual(view.layerShadowRadius, 0)
+        view.layerShadowRadius = 0.5
         XCTAssertEqual(view.layer.shadowRadius, 0.5)
     }
 
@@ -150,10 +142,18 @@ final class UIViewExtensionsTests: XCTestCase {
         let frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         let view = UIView(frame: frame)
         view.addShadow(ofColor: .red, radius: 5.0, offset: .zero, opacity: 0.5)
-        XCTAssertEqual(view.shadowColor, UIColor.red)
-        XCTAssertEqual(view.shadowRadius, 5.0)
-        XCTAssertEqual(view.shadowOffset, CGSize.zero)
-        XCTAssertEqual(view.shadowOpacity, 0.5)
+        XCTAssertEqual(view.layerShadowColor, UIColor.red)
+        XCTAssertEqual(view.layerShadowRadius, 5.0)
+        XCTAssertEqual(view.layerShadowOffset, CGSize.zero)
+        XCTAssertEqual(view.layerShadowOpacity, 0.5)
+    }
+
+    func testMasksToBounds() {
+        let view = UIView(frame: .zero)
+        view.layer.masksToBounds = true
+        XCTAssertTrue(view.masksToBounds)
+        view.masksToBounds = false
+        XCTAssertFalse(view.masksToBounds)
     }
 
     func testSize() {
@@ -229,7 +229,7 @@ final class UIViewExtensionsTests: XCTestCase {
         }
 
         XCTAssertEqual(view2.alpha, 1)
-        waitForExpectations(timeout: 0.5, handler: nil)
+        waitForExpectations(timeout: 0.5)
     }
 
     func testFadeOut() {
@@ -249,7 +249,7 @@ final class UIViewExtensionsTests: XCTestCase {
             fadeOutExpectation.fulfill()
         }
         XCTAssertEqual(view2.alpha, 0)
-        waitForExpectations(timeout: 0.5, handler: nil)
+        waitForExpectations(timeout: 0.5)
     }
 
     func testRotateByAngle() {
@@ -272,7 +272,7 @@ final class UIViewExtensionsTests: XCTestCase {
             rotateExpectation.fulfill()
         }
         XCTAssertEqual(view3.transform, transform3)
-        waitForExpectations(timeout: 0.5, handler: nil)
+        waitForExpectations(timeout: 0.5)
     }
 
     func testRotateToAngle() {
@@ -295,7 +295,7 @@ final class UIViewExtensionsTests: XCTestCase {
             rotateExpectation.fulfill()
         }
         XCTAssertEqual(view3.transform, transform3)
-        waitForExpectations(timeout: 0.5, handler: nil)
+        waitForExpectations(timeout: 0.5)
     }
 
     func testScale() {
@@ -312,6 +312,12 @@ final class UIViewExtensionsTests: XCTestCase {
 
         XCTAssertEqual(view1.transform, view2.transform)
         XCTAssertEqual(view1.transform, view3.transform)
+    }
+
+    func testLoadFromNib() {
+        let bundle = Bundle(for: UIViewExtensionsTests.self)
+        XCTAssertNotNil(UIView.loadFromNib(named: "UIImageView", bundle: bundle))
+        XCTAssertNotNil(UIView.loadFromNib(withClass: UIImageView.self, bundle: bundle))
     }
 
     func testRemoveSubviews() {
@@ -462,6 +468,47 @@ final class UIViewExtensionsTests: XCTestCase {
         XCTAssertEqual(buttonSubview.ancestorView(withClass: UITableView.self), tableView)
     }
 
+    func testFindConstraint() {
+        let view = UIView()
+        let container = UIView()
+        container.addSubview(view)
+        NSLayoutConstraint.activate([
+            view.widthAnchor.constraint(equalToConstant: 1),
+            container.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 3)
+        ])
+        XCTAssertNotNil(view.findConstraint(attribute: .width, for: view))
+        XCTAssertNil(view.findConstraint(attribute: .height, for: view))
+
+        // pathological case
+        XCTAssertNil(view.findConstraint(attribute: .height, for: UIView()))
+    }
+
+    func testConstraintProperties() {
+        let container = UIView()
+        let view = UIView()
+        container.addSubview(view)
+
+        // setup constraints, some in container and some in view
+        NSLayoutConstraint.activate([
+            view.widthAnchor.constraint(equalToConstant: 1),
+            view.heightAnchor.constraint(equalToConstant: 2),
+            container.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 3),
+            container.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 4),
+            view.topAnchor.constraint(equalTo: container.topAnchor, constant: 5),
+            view.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: 6)
+        ])
+
+        // find them
+        XCTAssertEqual(view.widthConstraint!.constant, 1)
+        XCTAssertEqual(view.heightConstraint!.constant, 2)
+        XCTAssertEqual(view.leadingConstraint!.constant, 3)
+        XCTAssertEqual(view.trailingConstraint!.constant, 4)
+        XCTAssertEqual(view.topConstraint!.constant, 5)
+        XCTAssertEqual(view.bottomConstraint!.constant, 6)
+
+        // simple empty case test
+        XCTAssertNil(container.widthConstraint)
+    }
 }
 
 #endif

@@ -1,16 +1,9 @@
-//
-//  DoubleExtensionsTests.swift
-//  SwifterSwift
-//
-//  Created by Omar Albeik on 8/27/16.
-//  Copyright © 2016 SwifterSwift
-//
+// DoubleExtensionsTests.swift - Copyright 2020 SwifterSwift
 
-import XCTest
 @testable import SwifterSwift
+import XCTest
 
 final class DoubleExtensionsTests: XCTestCase {
-
     func testInt() {
         XCTAssertEqual(Double(-1).int, -1)
         XCTAssertEqual(Double(2).int, 2)
@@ -30,8 +23,6 @@ final class DoubleExtensionsTests: XCTestCase {
     }
 
     func testOperators() {
-        XCTAssertEqual((Double(5.0) ** Double(2.0)), Double(25.0))
-        XCTAssertEqual((√Double(25.0)), Double(5.0))
+        XCTAssertEqual(Double(5.0) ** Double(2.0), Double(25.0))
     }
-
 }

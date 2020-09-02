@@ -73,6 +73,12 @@ SwifterSwift is Swift v5.0+ compatible starting from v5
 
 <h4>- Integrate Dispatch extensions only:</h4>
 <pre><code class="ruby language-ruby">pod 'SwifterSwift/Dispatch'</code></pre>
+
+<h4>- Integrate WebKit extensions only:</h4>
+<pre><code class="ruby language-ruby">pod 'SwifterSwift/WebKit'</code></pre>
+
+<h4>- Integrate HealthKit extensions only:</h4>
+<pre><code class="ruby language-ruby">pod 'SwifterSwift/HealthKit'</code></pre>
 </details>
 
 <details>
@@ -123,6 +129,7 @@ let package = Package(
 <summary>Manually</summary>
 </br>
 <p>Add the <a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Sources/SwifterSwift">SwifterSwift</a> folder to your Xcode project to use all extensions, or a specific extension.</p>
+<p>For your test targets you can also add the <a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Tests/XCTest">XCTest</a> folder.</p>
 </details>
 
 ## List of All Extensions
@@ -144,7 +151,6 @@ let package = Package(
 <li><a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Sources/SwifterSwift/SwiftStdlib/FloatingPointExtensions.swift"><code>FloatingPoint extensions</code></a></li>
 <li><a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Sources/SwifterSwift/SwiftStdlib/IntExtensions.swift"><code>Int extensions</code></a></li>
 <li><a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Sources/SwifterSwift/SwiftStdlib/OptionalExtensions.swift"><code>Optional extensions</code></a></li>
-<li><a href="https://github.com/SwifterSwift/SwifterSwift/blob/master/Sources/SwifterSwift/SwiftStdlib/RandomAccessCollectionExtensions.swift"><code>RandomAccessCollection extensions</code></a></li>
 <li><a href="https://github.com/SwifterSwift/SwifterSwift/blob/master/Sources/SwifterSwift/SwiftStdlib/RangeReplaceableCollectionExtensions.swift"><code>RangeReplaceableCollection extensions</code></a></li>
 <li><a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Sources/SwifterSwift/SwiftStdlib/SequenceExtensions.swift"><code>Sequence extensions</code></a></li>
 <li><a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Sources/SwifterSwift/SwiftStdlib/SignedIntegerExtensions.swift"><code>SignedInteger extensions</code></a></li>
@@ -185,7 +191,7 @@ let package = Package(
 <li><a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Sources/SwifterSwift/UIKit/UICollectionViewExtensions.swift"><code>UICollectionView extensions</code></a></li>
 <li><a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Sources/SwifterSwift/Shared/ColorExtensions.swift"><code>UIColor extensions</code></a></li>
 <li><a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Sources/SwifterSwift/UIKit/UIDatePickerExtensions.swift"><code>UIDatePicker extensions</code></a></li>
-<li><a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Sources/SwifterSwift/UIKit/UIEdgeInsetsExtensions.swift"><code>UIEdgeInsets extensions</code></a></li>
+<li><a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Sources/SwifterSwift/Shared/EdgeInsetsExtensions.swift"><code>UIEdgeInsets extensions</code></a></li>
 <li><a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Sources/SwifterSwift/UIKit/UIFontExtensions.swift"><code>UIFont extensions</code></a></li>
 <li><a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Sources/SwifterSwift/UIKit/UIGestureRecognizer.swift"><code>UIGestureRecognizer extensions</code></a></li>
 <li><a href="https://github.com/SwifterSwift/SwifterSwift/tree/master/Sources/SwifterSwift/UIKit/UIImageExtensions.swift"><code>UIImage extensions</code></a></li>
@@ -301,6 +307,30 @@ let package = Package(
 </br>
 <ul>
 <li><a href="https://github.com/SwifterSwift/SwifterSwift/blob/master/Sources/SwifterSwift/Dispatch/DispatchQueueExtensions.swift"><code>DispatchQueue extensions</code></a></li>
+</ul>
+</details>
+
+<details>
+<summary>WebKit Extensions</summary>
+</br>
+<ul>
+<li><a href="https://github.com/SwifterSwift/SwifterSwift/blob/master/Sources/SwifterSwift/WebKit/WKWebViewExtensions.swift"><code>WKWebView extensions</code></a></li>
+</ul>
+</details>
+
+<details>
+<summary>HealthKit Extensions</summary>
+</br>
+<ul>
+<li><a href="https://github.com/SwifterSwift/SwifterSwift/blob/master/Sources/SwifterSwift/HealthKit/HKActivitySummaryExtensions.swift"><code>HKActivitySummary extensions</code></a></li>
+</ul>
+</details>
+
+<details>
+<summary>XCTest Extensions</summary>
+</br>
+<ul>
+<li><a href="https://github.com/SwifterSwift/SwifterSwift/blob/master/Tests/XCTest/XCTestExtensions.swift"><code>XCTest extensions</code></a></li>
 </ul>
 </details>
 

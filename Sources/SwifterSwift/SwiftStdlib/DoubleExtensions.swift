@@ -1,10 +1,4 @@
-//
-//  DoubleExtensions.swift
-//  SwifterSwift
-//
-//  Created by Omar Albeik on 8/6/16.
-//  Copyright © 2016 SwifterSwift
-//
+// DoubleExtensions.swift - Copyright 2020 SwifterSwift
 
 #if canImport(CoreGraphics)
 import CoreGraphics
@@ -17,8 +11,8 @@ import Glibc
 #endif
 
 // MARK: - Properties
-public extension Double {
 
+public extension Double {
     /// SwifterSwift: Int.
     var int: Int {
         return Int(self)
@@ -35,13 +29,12 @@ public extension Double {
         return CGFloat(self)
     }
     #endif
-
 }
 
 // MARK: - Operators
 
 precedencegroup PowerPrecedence { higherThan: MultiplicationPrecedence }
-infix operator ** : PowerPrecedence
+infix operator **: PowerPrecedence
 /// SwifterSwift: Value of exponentiation.
 ///
 /// - Parameters:
@@ -52,15 +45,3 @@ func ** (lhs: Double, rhs: Double) -> Double {
     // http://nshipster.com/swift-operators/
     return pow(lhs, rhs)
 }
-
-// swiftlint:disable identifier_name
-prefix operator √
-/// SwifterSwift: Square root of double.
-///
-/// - Parameter double: double value to find square root for.
-/// - Returns: square root of given double.
-public prefix func √ (double: Double) -> Double {
-    // http://nshipster.com/swift-operators/
-    return sqrt(double)
-}
-// swiftlint:enable identifier_name

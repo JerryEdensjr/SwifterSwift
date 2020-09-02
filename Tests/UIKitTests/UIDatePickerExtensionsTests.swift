@@ -1,19 +1,13 @@
-//
-//  UIDatePickerExtensionsTests.swift
-//  SwifterSwift
-//
-//  Created by Omar Albeik on 12/9/17.
-//  Copyright © 2017 SwifterSwift
-//
+// UIDatePickerExtensionsTests.swift - Copyright 2020 SwifterSwift
 
-import XCTest
 @testable import SwifterSwift
+import XCTest
 
 #if canImport(UIKit) && os(iOS)
 import UIKit
 
 final class UIDatePickerExtensionsTests: XCTestCase {
-
+    #if !targetEnvironment(macCatalyst)
     func testTextColor() {
         let datePicker = UIDatePicker()
         if let color = datePicker.textColor {
@@ -29,7 +23,7 @@ final class UIDatePickerExtensionsTests: XCTestCase {
         datePicker.textColor = nil
         XCTAssertNil(datePicker.textColor)
     }
-
+    #endif
 }
 
 #endif

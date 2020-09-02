@@ -1,17 +1,10 @@
-//
-//  StringExtensionsTests.swift
-//  SwifterSwift
-//
-//  Created by Omar Albeik on 8/27/16.
-//  Copyright © 2016 SwifterSwift
-//
+// StringExtensionsTests.swift - Copyright 2020 SwifterSwift
 
-import XCTest
 @testable import SwifterSwift
+import XCTest
 
 // swiftlint:disable:next type_body_length
 final class StringExtensionsTests: XCTestCase {
-
     var helloWorld = "Hello World!"
 
     override func setUp() {
@@ -246,6 +239,10 @@ final class StringExtensionsTests: XCTestCase {
         XCTAssertEqual("it's easy to encode strings".urlEncoded, "it's%20easy%20to%20encode%20strings")
     }
 
+    func testRegexEscaped() {
+        XCTAssertEqual("hello ^$ there".regexEscaped, "hello \\^\\$ there")
+    }
+
     func testWithoutSpacesAndNewLines() {
         XCTAssertEqual("Hello \n Test".withoutSpacesAndNewLines, "HelloTest")
     }
@@ -268,7 +265,7 @@ final class StringExtensionsTests: XCTestCase {
         XCTAssertNotNil("8.23".float(locale: Locale(identifier: "en_US_POSIX")))
         XCTAssertEqual("8.23".float(locale: Locale(identifier: "en_US_POSIX")), Float(8.23))
 
-        #if os(Linux) || targetEnvironment(macCatalyst)
+        #if os(Linux)
         XCTAssertEqual("8s".float(), 8)
         #else
         XCTAssertNil("8s".float())
@@ -282,7 +279,7 @@ final class StringExtensionsTests: XCTestCase {
         XCTAssertNotNil("8.23".double(locale: Locale(identifier: "en_US_POSIX")))
         XCTAssertEqual("8.23".double(locale: Locale(identifier: "en_US_POSIX")), 8.23)
 
-        #if os(Linux) || targetEnvironment(macCatalyst)
+        #if os(Linux)
         XCTAssertEqual("8s".double(), 8)
         #else
         XCTAssertNil("8s".double())
@@ -297,11 +294,7 @@ final class StringExtensionsTests: XCTestCase {
         XCTAssertNotNil("8.23".cgFloat(locale: Locale(identifier: "en_US_POSIX")))
         XCTAssertEqual("8.23".cgFloat(locale: Locale(identifier: "en_US_POSIX")), CGFloat(8.23))
 
-        #if targetEnvironment(macCatalyst)
-        XCTAssertEqual("8s".cgFloat(), 8)
-        #else
         XCTAssertNil("8s".cgFloat())
-        #endif
         #endif
     }
 
@@ -317,7 +310,8 @@ final class StringExtensionsTests: XCTestCase {
     }
 
     func testMostCommonCharacter() {
-        let mostCommonCharacter = "This is a test, since e is appearing every where e should be the common character".mostCommonCharacter
+        let mostCommonCharacter = "This is a test, since e is appearing every where e should be the common character"
+            .mostCommonCharacter
         XCTAssertEqual(mostCommonCharacter(), "e")
         XCTAssertNil("".mostCommonCharacter())
     }
@@ -426,7 +420,6 @@ final class StringExtensionsTests: XCTestCase {
         str = ""
         str.firstCharacterUppercased()
         XCTAssertEqual(str, "")
-
     }
 
     func testHasUniqueCharacters() {
@@ -552,6 +545,8 @@ final class StringExtensionsTests: XCTestCase {
     }
 
     func testTruncated() {
+        XCTAssertEqual("".truncated(toLength: 5, trailing: nil), "")
+        XCTAssertEqual("This is a short sentence".truncated(toLength: -1, trailing: nil), "This is a short sentence")
         XCTAssertEqual("This is a very long sentence".truncated(toLength: 14), "This is a very...")
 
         XCTAssertEqual("This is a very long sentence".truncated(toLength: 14, trailing: nil), "This is a very")
@@ -571,11 +566,24 @@ final class StringExtensionsTests: XCTestCase {
     }
 
     func testMatches() {
-        XCTAssertTrue("123".matches(pattern: "\\d{3}"))
+        XCTAssert("123".matches(pattern: "\\d{3}"))
         XCTAssertFalse("dasda".matches(pattern: "\\d{3}"))
         XCTAssertFalse("notanemail.com".matches(pattern: "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"))
-        XCTAssertTrue("email@mail.com".matches(pattern: "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"))
+        XCTAssert("email@mail.com".matches(pattern: "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"))
     }
+
+    #if canImport(Foundation)
+    func testRegexMatchOperator() {
+        XCTAssert("123" ~= "\\d{3}")
+        XCTAssertFalse("dasda" ~= "\\d{3}")
+        XCTAssertFalse("notanemail.com" ~= "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}")
+        XCTAssert("email@mail.com" ~= "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}")
+        XCTAssert("hat" ~= "[a-z]at")
+        XCTAssertFalse("" ~= "[a-z]at")
+        XCTAssert("" ~= "[a-z]*")
+        XCTAssertFalse("" ~= "[0-9]+")
+    }
+    #endif
 
     func testPadStart() {
         var str: String = "str"
@@ -651,7 +659,7 @@ final class StringExtensionsTests: XCTestCase {
         #if os(iOS) || os(tvOS)
         let strCorrect = "Hello, World!"
 
-        XCTAssertTrue(strCorrect.isSpelledCorrectly)
+        XCTAssert(strCorrect.isSpelledCorrectly)
 
         let strNonCorrect = "Helol, Wrold!"
         XCTAssertFalse(strNonCorrect.isSpelledCorrectly)
@@ -694,8 +702,10 @@ final class StringExtensionsTests: XCTestCase {
     func testBold() {
         #if canImport(Foundation) && os(macOS)
         let boldString = "hello".bold
-        // swiftlint:disable:next legacy_constructor
-        let attrs = boldString.attributes(at: 0, longestEffectiveRange: nil, in: NSMakeRange(0, boldString.length))
+        let attrs = boldString.attributes(
+            at: 0,
+            longestEffectiveRange: nil,
+            in: NSRange(location: 0, length: boldString.length))
         XCTAssertNotNil(attrs[NSAttributedString.Key.font])
 
         #if os(macOS)
@@ -717,8 +727,10 @@ final class StringExtensionsTests: XCTestCase {
     func testUnderline() {
         #if !os(Linux)
         let underlinedString = "hello".underline
-        // swiftlint:disable:next legacy_constructor
-        let attrs = underlinedString.attributes(at: 0, longestEffectiveRange: nil, in: NSMakeRange(0, underlinedString.length))
+        let attrs = underlinedString.attributes(
+            at: 0,
+            longestEffectiveRange: nil,
+            in: NSRange(location: 0, length: underlinedString.length))
         XCTAssertNotNil(attrs[NSAttributedString.Key.underlineStyle])
         guard let style = attrs[NSAttributedString.Key.underlineStyle] as? Int else {
             XCTFail("Unable to find style in testUnderline")
@@ -731,8 +743,10 @@ final class StringExtensionsTests: XCTestCase {
     func testStrikethrough() {
         #if !os(Linux)
         let strikedthroughString = "hello".strikethrough
-        // swiftlint:disable:next legacy_constructor
-        let attrs = strikedthroughString.attributes(at: 0, longestEffectiveRange: nil, in: NSMakeRange(0, strikedthroughString.length))
+        let attrs = strikedthroughString.attributes(
+            at: 0,
+            longestEffectiveRange: nil,
+            in: NSRange(location: 0, length: strikedthroughString.length))
         XCTAssertNotNil(attrs[NSAttributedString.Key.strikethroughStyle])
         guard let style = attrs[NSAttributedString.Key.strikethroughStyle] as? NSNumber else {
             XCTFail("Unable to find style in testStrikethrough")
@@ -745,8 +759,10 @@ final class StringExtensionsTests: XCTestCase {
     func testItalic() {
         #if os(iOS)
         let italicString = "hello".italic
-        // swiftlint:disable:next legacy_constructor
-        let attrs = italicString.attributes(at: 0, longestEffectiveRange: nil, in: NSMakeRange(0, italicString.length))
+        let attrs = italicString.attributes(
+            at: 0,
+            longestEffectiveRange: nil,
+            in: NSRange(location: 0, length: italicString.length))
         XCTAssertNotNil(attrs[NSAttributedString.Key.font])
         guard let font = attrs[NSAttributedString.Key.font] as? UIFont else {
             XCTFail("Unable to find font in testItalic")
@@ -759,8 +775,10 @@ final class StringExtensionsTests: XCTestCase {
     func testColored() {
         #if canImport(AppKit) || canImport(UIKit)
         let coloredString = "hello".colored(with: .orange)
-        // swiftlint:disable:next legacy_constructor
-        let attrs = coloredString.attributes(at: 0, longestEffectiveRange: nil, in: NSMakeRange(0, coloredString.length))
+        let attrs = coloredString.attributes(
+            at: 0,
+            longestEffectiveRange: nil,
+            in: NSRange(location: 0, length: coloredString.length))
         XCTAssertNotNil(attrs[NSAttributedString.Key.foregroundColor])
 
         guard let color = attrs[.foregroundColor] as? Color else {
@@ -842,5 +860,4 @@ final class StringExtensionsTests: XCTestCase {
         XCTAssertNotNil(num.ordinalString())
         XCTAssertEqual(num.ordinalString(), "12th")
     }
-
 }
