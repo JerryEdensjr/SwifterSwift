@@ -1,28 +1,22 @@
-//
-//  UIStackViewExtensionsTests.swift
-//  SwifterSwift
-//
-//  Created by Benjamin Meyer on 2/18/18.
-//  Copyright © 2018 SwifterSwift
-//
+// UIStackViewExtensionsTests.swift - Copyright 2020 SwifterSwift
 
-import XCTest
 @testable import SwifterSwift
+import XCTest
 
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
 
 final class UIStackViewExtensionsTest: XCTestCase {
-
     // MARK: - Initializers
+
     func testInitWithViews() {
         let view1 = UIView()
         let view2 = UIView()
         var stack = UIStackView(arrangedSubviews: [view1, view2], axis: .horizontal)
 
         XCTAssertEqual(stack.arrangedSubviews.count, 2)
-        XCTAssertTrue(stack.arrangedSubviews[0] === view1)
-        XCTAssertTrue(stack.arrangedSubviews[1] === view2)
+        XCTAssert(stack.arrangedSubviews[0] === view1)
+        XCTAssert(stack.arrangedSubviews[1] === view2)
 
         XCTAssertEqual(stack.axis, .horizontal)
         XCTAssertEqual(stack.alignment, .fill)
@@ -64,7 +58,6 @@ final class UIStackViewExtensionsTest: XCTestCase {
         stack.removeArrangedSubviews()
         XCTAssert(stack.arrangedSubviews.isEmpty)
     }
-
 }
 
 #endif

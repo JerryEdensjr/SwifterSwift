@@ -1,16 +1,9 @@
-//
-//  IntExtensionsTests.swift
-//  SwifterSwift
-//
-//  Created by Omar Albeik on 8/27/16.
-//  Copyright © 2016 SwifterSwift
-//
+// IntExtensionsTests.swift - Copyright 2020 SwifterSwift
 
-import XCTest
 @testable import SwifterSwift
+import XCTest
 
 final class IntExtensionsTests: XCTestCase {
-
     func testCountableRange() {
         XCTAssertEqual(10.countableRange, 0..<10)
     }
@@ -52,10 +45,10 @@ final class IntExtensionsTests: XCTestCase {
         XCTAssertEqual(1000.kFormatted, "1k")
         XCTAssertEqual((-1000).kFormatted, "-1k")
 
-        XCTAssertEqual(100000.kFormatted, "100k")
-        XCTAssertEqual((-100000).kFormatted, "-100k")
+        XCTAssertEqual(100_000.kFormatted, "100k")
+        XCTAssertEqual((-100_000).kFormatted, "-100k")
 
-        XCTAssertEqual(1000000.kFormatted, "10kk")
+        XCTAssertEqual(1_000_000.kFormatted, "10kk")
     }
 
     func testDigits() {
@@ -75,12 +68,12 @@ final class IntExtensionsTests: XCTestCase {
 
     func testIsPrime() {
         // Prime number
-        XCTAssertTrue(2.isPrime())
-        XCTAssertTrue(3.isPrime())
-        XCTAssertTrue(7.isPrime())
-        XCTAssertTrue(19.isPrime())
-        XCTAssertTrue(577.isPrime())
-        XCTAssertTrue(1999.isPrime())
+        XCTAssert(2.isPrime())
+        XCTAssert(3.isPrime())
+        XCTAssert(7.isPrime())
+        XCTAssert(19.isPrime())
+        XCTAssert(577.isPrime())
+        XCTAssert(1999.isPrime())
 
         // Composite number
         XCTAssertFalse(4.isPrime())
@@ -97,13 +90,14 @@ final class IntExtensionsTests: XCTestCase {
 
     func testRomanNumeral() {
         XCTAssertEqual(10.romanNumeral(), "X")
+        XCTAssertEqual(2784.romanNumeral(), "MMDCCLXXXIV")
         XCTAssertNil((-1).romanNumeral())
     }
 
     func testRoundToNearest() {
-        XCTAssert(12.roundToNearest(5) == 10)
-        XCTAssert(63.roundToNearest(25) == 75)
-        XCTAssert(42.roundToNearest(0) == 42)
+        XCTAssertEqual(12.roundToNearest(5), 10)
+        XCTAssertEqual(63.roundToNearest(25), 75)
+        XCTAssertEqual(42.roundToNearest(0), 42)
     }
 
     func testOperators() {
@@ -112,5 +106,4 @@ final class IntExtensionsTests: XCTestCase {
         XCTAssert((±2) == (2, -2) || (±2) == (-2, 2))
         XCTAssertEqual(√25, 5.0)
     }
-
 }

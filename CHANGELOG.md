@@ -3,8 +3,26 @@
 The changelog for **SwifterSwift**. Also see the [releases](https://github.com/SwifterSwift/SwifterSwift/releases) on GitHub.
 
 ## Upcoming Release
-
+### Breaking Change
+- **UIView**
+  - Rename `shadowColor`, `shadowOffset`, `shadowOpacity` and `shadowRadius` to `layerShadowColor`, `layerShadowOffset`, `layerShadowOpacity` and `layerShadowRadius` to avoid naming colisions with subclasses properties defined in other modules e.g. UIKit. [#897](https://github.com/SwifterSwift/SwifterSwift/pull/897) by [LucianoPAlmeida](https://github.com/LucianoPAlmeida)
 ### Added
+- **UIScrollView**
+  - Added `visibleRect`, `scrollToTop(animated:)`, `scrollToLeft(animated:)`, `scrollToBottom(animated:)`, `scrollToRight(animated:)`, `scrollUp(animated:)`, `scrollLeft(animated:)`, `scrollDown(animated:)`, `scrollRight(animated:)`. [#888](https://github.com/SwifterSwift/SwifterSwift/pull/888) by [guykogus](https://github.com/guykogus)
+- **XCTest**
+  - Added `XCTAssertEqual(_:_:accuracy:_:file:line:)` for checking if `Color` objects are equal within a given level of accuracy. [#889](https://github.com/SwifterSwift/SwifterSwift/pull/889) by [guykogus](https://github.com/guykogus)
+- **FloatingPoint**
+  - Moved the square root operator `√` from `Double` and `Float` to make it generic. [#880](https://github.com/SwifterSwift/SwifterSwift/pull/880) by [guykogus](https://github.com/guykogus)
+- **Collection**
+  - Moved `indices(of:)` from `RandomAccessCollection` to find the indices of an element. [#863](https://github.com/SwifterSwift/SwifterSwift/pull/863) by [guykogus](https://github.com/guykogus)
+- **UIViewController**:
+  - Added `instantiate(from:bundle:identifier:)` function to `UIViewController` to make it easier to instantiate it from storyboard. [#860](https://github.com/SwifterSwift/SwifterSwift/pull/860) by [VatoKo](https://github.com/VatoKo)
+- **String**:
+  - Overloaded Swift's 'contains' operator (`~=`) for `String` to check regex matching. [#858](https://github.com/SwifterSwift/SwifterSwift/pull/858) by [VatoKo](https://github.com/VatoKo)
+  - `regexEscaped`, which returns an escaped string for inclusion in a regex pattern
+- **DispatchQueue**:
+  - Added `asyncAfter(delay:qos:flags:execute:)` method to use it more conveniently without typing unnecessary `.now() + delay`. [#859](https://github.com/SwifterSwift/SwifterSwift/pull/859) by [VatoKo](https://github.com/VatoKo)
+  - Re-added `debounce(delay:action:)` for only executing a closure once using a throttle delay. [#869](https://github.com/SwifterSwift/SwifterSwift/pull/869) by [guykogus](https://github.com/guykogus)
 - **RangeReplaceableCollection**:
   - `subscript(offset:)` and `subscript(range:)` to access and replace elements by the index offsets. [#826](https://github.com/SwifterSwift/SwifterSwift/pull/826) by [guykogus](https://github.com/guykogus)
 - **Sequence**:
@@ -12,16 +30,47 @@ The changelog for **SwifterSwift**. Also see the [releases](https://github.com/S
   - Added `last(where:equals:)` to find the last element of the sequence with having property by given key path equals to given value. [#838](https://github.com/SwifterSwift/SwifterSwift/pull/838) by [hamtiko](https://github.com/hamtiko)
 - **SKNode**:
   - `center`, `topLeft`, `topRight`, `bottomLeft`, `bottomRight` to get anchor position or set position using anchor. [#835](https://github.com/SwifterSwift/SwifterSwift/pull/835) by [rypyak](https://github.com/rypyak)
+- **CGSize**:
+  - Added new `+`, `+=`, `-` and `-=` operator extensions for tuple (width: CGFloat, height: CGFloat). [#841](https://github.com/SwifterSwift/SwifterSwift/pull/841) by [hamtiko](https://github.com/hamtiko)
+- **WKWebView**:
+  - Added `loadURL(_:)` and `loadURLString(_:)` extensions for `WkWebView`. [#851](https://github.com/SwifterSwift/SwifterSwift/pull/851) by [hamtiko](https://github.com/hamtiko)
+- **HKActivitySummary**:
+  - Added `isStandGoalMet`, `isExerciseTimeGoalMet`, and `isEnergyBurnedGoalMet`. [#875](https://github.com/SwifterSwift/SwifterSwift/pull/875) by [lhygilbert](https://github.com/lhygilbert)
+- **UIView**:
+  - Added `masksToBounds` (IBInspectable) extension. [#877](https://github.com/SwifterSwift/SwifterSwift/pull/877) by [hamtiko](https://github.com/hamtiko)
+- **UIImage**
+  - Added `averageColor`, which calculates the average UIColor for an entire image. [#884](https://github.com/SwifterSwift/SwifterSwift/pull/884) by [gurgeous](https://github.com/gurgeous)
+  - Added `loadFromNib(withClass:)`, which loads a UIView of a particular type from a nib file. [#885](https://github.com/SwifterSwift/SwifterSwift/pull/885) by [gurgeous](https://github.com/gurgeous)
+  - Added `findConstraint` for finding an existing constraint. [#886](https://github.com/SwifterSwift/SwifterSwift/pull/886) by [gurgeous]
+  - Added `widthConstraint`, `heightConstraint`, `leadingConstraint`, `trailingConstraint`, `topConstraint`, and `bottomConstraint` for finding specific constraints. [#886](https://github.com/SwifterSwift/SwifterSwift/pull/886) by [gurgeous]
 
 ### Changed
-- **NSAttributedStringExtensions.swift**:
+- **NSAttributedString**:
   - `applying(attributes:)` changed access modifier from `fileprivate` to `public`. [#832](https://github.com/SwifterSwift/SwifterSwift/pull/832) by [cHaLkdusT](https://github.com/cHaLkdusT)
+- **Color**:
+  - Refactored `init(light:dark:)` to remove deployment target version restrictions. [#844](https://github.com/SwifterSwift/SwifterSwift/pull/844) by [VincentSit](https://github.com/vincentsit).
+- **CAGradientLayer**:
+  - In `init(colors:locations:startPoint:endPoint:type:)` added default values to `startPoint` and `endPoint`. [#864](https://github.com/SwifterSwift/SwifterSwift/pull/864) by [guykogus](https://github.com/guykogus)
+- **UITextField**:
+  - Added `addPaddingRight`,`addPaddingRightIcon`extension,[#878](https://github.com/SwifterSwift/SwifterSwift/pull/878) by [Jayxiang](https://github.com/Jayxiang)
 
 ### Deprecated
+- **Sequence**:
+  - Marked `map(by:)`, `compactMap(by:)`, `filter(by:)` as deprecated in favor use of Key Path expressions as functions feature in Swift 5.2. [#862](https://github.com/SwifterSwift/SwifterSwift/pull/862) by [Roman Podymov](https://github.com/RomanPodymov).
 
 ### Removed
+- **UIDatePicker**
+  - Disabled `textColor` when compiling for target `macCatalyst` as it will crash. [#864](https://github.com/SwifterSwift/SwifterSwift/pull/864) by [guykogus](https://github.com/guykogus)
 
 ### Fixed
+- **Collection**
+  - `indices(where:)`, `forEach(slice:body:)` can be used on a collection with any index type. `average()` can be used on any integer element type. [#863](https://github.com/SwifterSwift/SwifterSwift/pull/863) by [guykogus](https://github.com/guykogus)
+- **CAGradientLayer**:
+  - CAGradientLayer extensions inaccessible through internal level protection. [#856](https://github.com/SwifterSwift/SwifterSwift/pull/856) by [Den Andreychuk](https://github.com/denandreychuk).
+- **StringExtensions.swift**:
+  - Fixed a bug: When the length of a string is 0, calling truncated method will crash. [#866](https://github.com/SwifterSwift/SwifterSwift/pull/866) by [phil zhang](https://github.com/philCc)
+- **UITextField**
+  - Fixed a bug:UITextField `addPaddingLeftIcon` doesn't work on iOS 13[#876](https://github.com/SwifterSwift/SwifterSwift/issues/876) by [Jayxiang](https://github.com/Jayxiang)
 
 ### Security
 

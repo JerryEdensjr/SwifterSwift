@@ -1,19 +1,12 @@
-//
-//  UIRefreshControlExntesionsTests.swift
-//  SwifterSwift
-//
-//  Created by ratul sharker on 7/24/18.
-//  Copyright © 2018 SwifterSwift
-//
+// UIRefreshControlExntesionsTests.swift - Copyright 2020 SwifterSwift
 
-import XCTest
 @testable import SwifterSwift
+import XCTest
 
 #if canImport(UIKit) && os(iOS)
 import UIKit
 
 final class UIRefreshControlExtensionTests: XCTestCase {
-
     func testBeginRefreshAsRefreshControlSubview() {
         let tableView = UITableView()
         XCTAssertEqual(tableView.contentOffset, .zero)
@@ -21,7 +14,7 @@ final class UIRefreshControlExtensionTests: XCTestCase {
         tableView.addSubview(refreshControl)
         refreshControl.beginRefreshing(in: tableView, animated: true)
 
-        XCTAssertTrue(refreshControl.isRefreshing)
+        XCTAssert(refreshControl.isRefreshing)
         XCTAssertEqual(tableView.contentOffset.y, -refreshControl.frame.height)
 
         let anotherTableview = UITableView()
@@ -29,10 +22,9 @@ final class UIRefreshControlExtensionTests: XCTestCase {
         anotherTableview.refreshControl = UIRefreshControl()
         anotherTableview.refreshControl?.beginRefreshing(in: anotherTableview, animated: true, sendAction: true)
 
-        XCTAssertTrue(anotherTableview.refreshControl!.isRefreshing)
+        XCTAssert(anotherTableview.refreshControl!.isRefreshing)
         XCTAssertEqual(anotherTableview.contentOffset.y, -anotherTableview.refreshControl!.frame.height)
     }
-
 }
 
 #endif

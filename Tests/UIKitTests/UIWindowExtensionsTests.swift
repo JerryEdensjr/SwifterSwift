@@ -1,19 +1,12 @@
-//
-//  UIWindowExtensionsTests.swift
-//  SwifterSwift
-//
-//  Created by Omar Albeik on 6/2/18.
-//  Copyright © 2018 SwifterSwift
-//
+// UIWindowExtensionsTests.swift - Copyright 2020 SwifterSwift
 
-import XCTest
 @testable import SwifterSwift
+import XCTest
 
 #if canImport(UIKit) && os(iOS)
 import UIKit
 
 final class UIWindowExtensionsTests: XCTestCase {
-
     func testSwitchRootViewController() {
         let viewController = UIViewController()
         let tableViewController = UITableViewController()
@@ -36,9 +29,8 @@ final class UIWindowExtensionsTests: XCTestCase {
             XCTAssertEqual(window.rootViewController!, viewController)
         }
 
-        waitForExpectations(timeout: 1, handler: nil)
+        waitForExpectations(timeout: 1)
     }
-
 }
 
 #endif

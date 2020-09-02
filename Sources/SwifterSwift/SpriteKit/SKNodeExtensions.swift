@@ -1,23 +1,19 @@
-//
-//  SKNodeExtensions.swift
-//  SwifterSwift
-//
-//  Created by Olivia Brown on 5/28/18.
-//  Copyright © 2018 SwifterSwift
-//
+// SKNodeExtensions.swift - Copyright 2020 SwifterSwift
 
 #if canImport(SpriteKit)
 import SpriteKit
 
 // MARK: - Methods
-public extension SKNode {
 
+public extension SKNode {
     /// SwifterSwift: Return an array of all SKNode descendants
     ///
     ///         mySKNode.descendants() -> [childNodeOne, childNodeTwo]
     ///
     func descendants() -> [SKNode] {
-        return children + children.reduce(into: [SKNode]()) { $0 += $1.descendants() }
+        var children = self.children
+        children.append(contentsOf: children.reduce(into: [SKNode]()) { $0.append(contentsOf: $1.descendants()) })
+        return children
     }
 
     /// SwifterSwift: The center anchor of the node in its parent's coordinate system.
@@ -94,7 +90,6 @@ public extension SKNode {
             position = CGPoint(x: newValue.x - contents.maxX, y: newValue.y - contents.minY)
         }
     }
-
 }
 
 #endif
