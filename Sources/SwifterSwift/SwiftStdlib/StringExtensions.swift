@@ -25,6 +25,11 @@ public extension String {
     ///		"SGVsbG8gV29ybGQh".base64Decoded = Optional("Hello World!")
     ///
     var base64Decoded: String? {
+        if let data = Data(base64Encoded: self,
+                           options: .ignoreUnknownCharacters) {
+            return String(data: data, encoding: .utf8)
+        }
+        
         let remainder = count % 4
 
         var padding = ""
@@ -242,7 +247,7 @@ public extension String {
     #endif
 
     #if canImport(Foundation)
-    /// SwifterSwift: Check if string is a valid Swift number. Note: In North America, "." is the decimal separator, while in many parts of Europe "," is used,
+    /// SwifterSwift: Check if string is a valid Swift number. Note: In North America, "." is the decimal separator, while in many parts of Europe "," is used.
     ///
     ///		"123".isNumeric -> true
     ///     "1.3".isNumeric -> true (en_US)
@@ -407,7 +412,7 @@ public extension String {
     #endif
 
     #if canImport(Foundation)
-    /// SwifterSwift: Escaped string for inclusion in a regular expression pattern
+    /// SwifterSwift: Escaped string for inclusion in a regular expression pattern.
     ///
     /// "hello ^$ there" -> "hello \\^\\$ there"
     ///
@@ -427,17 +432,17 @@ public extension String {
     #endif
 
     #if canImport(Foundation)
-    /// SwifterSwift: Check if the given string contains only white spaces
+    /// SwifterSwift: Check if the given string contains only white spaces.
     var isWhitespace: Bool {
         return trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
     #endif
 
     #if os(iOS) || os(tvOS)
-    /// SwifterSwift: Check if the given string spelled correctly
+    /// SwifterSwift: Check if the given string spelled correctly.
     var isSpelledCorrectly: Bool {
         let checker = UITextChecker()
-        let range = NSRange(location: 0, length: utf16.count)
+        let range = NSRange(startIndex..<endIndex, in: self)
 
         let misspelledRange = checker.rangeOfMisspelledWord(
             in: self,
@@ -541,7 +546,7 @@ public extension String {
     }
 
     #if canImport(Foundation)
-    /// SwifterSwift: an array of all words in a string
+    /// SwifterSwift: an array of all words in a string.
     ///
     ///		"Swift is amazing".words() -> ["Swift", "is", "amazing"]
     ///
@@ -787,7 +792,7 @@ public extension String {
     /// - Parameters:
     ///   - index: string index the slicing should start from.
     ///   - length: amount of characters to be sliced after given index.
-    /// - Returns: sliced substring of length number of characters (if applicable) (example: "Hello World".slicing(from: 6, length: 5) -> "World")
+    /// - Returns: sliced substring of length number of characters (if applicable) (example: "Hello World".slicing(from: 6, length: 5) -> "World").
     func slicing(from index: Int, length: Int) -> String? {
         guard length >= 0, index >= 0, index < count else { return nil }
         guard index.advanced(by: length) <= count else {
@@ -961,20 +966,65 @@ public extension String {
     /// SwifterSwift: Verify if string matches the regex pattern.
     ///
     /// - Parameter pattern: Pattern to verify.
-    /// - Returns: true if string matches the pattern.
+    /// - Returns: `true` if string matches the pattern.
     func matches(pattern: String) -> Bool {
         return range(of: pattern, options: .regularExpression, range: nil, locale: nil) != nil
     }
     #endif
 
     #if canImport(Foundation)
-    /// SwifterSwift: Overload Swift's 'contains' operator for matching regex pattern
+    /// SwifterSwift: Verify if string matches the regex.
     ///
-    /// - Parameter lhs: String to check on regex pattern.
-    /// - Parameter rhs: Regex pattern to match against.
+    /// - Parameters:
+    ///   - regex: Regex to verify.
+    ///   - options: The matching options to use.
+    /// - Returns: `true` if string matches the regex.
+    func matches(regex: NSRegularExpression, options: NSRegularExpression.MatchingOptions = []) -> Bool {
+        let range = NSRange(startIndex..<endIndex, in: self)
+        return regex.firstMatch(in: self, options: options, range: range) != nil
+    }
+    #endif
+
+    #if canImport(Foundation)
+    /// SwifterSwift: Overload Swift's 'contains' operator for matching regex pattern.
+    ///
+    /// - Parameters:
+    ///   - lhs: String to check on regex pattern.
+    ///   - rhs: Regex pattern to match against.
     /// - Returns: true if string matches the pattern.
     static func ~= (lhs: String, rhs: String) -> Bool {
         return lhs.range(of: rhs, options: .regularExpression) != nil
+    }
+    #endif
+
+    #if canImport(Foundation)
+    /// SwifterSwift: Overload Swift's 'contains' operator for matching regex.
+    ///
+    /// - Parameters:
+    ///   - lhs: String to check on regex.
+    ///   - rhs: Regex to match against.
+    /// - Returns: `true` if there is at least one match for the regex in the string.
+    static func ~= (lhs: String, rhs: NSRegularExpression) -> Bool {
+        let range = NSRange(lhs.startIndex..<lhs.endIndex, in: lhs)
+        return rhs.firstMatch(in: lhs, range: range) != nil
+    }
+    #endif
+
+    #if canImport(Foundation)
+    /// SwifterSwift: Returns a new string in which all occurrences of a regex in a specified range of the receiver are replaced by the template.
+    /// - Parameters:
+    ///   - regex Regex to replace.
+    ///   - template: The template to replace the regex.
+    ///   - options: The matching options to use
+    ///   - searchRange: The range in the receiver in which to search.
+    /// - Returns: A new string in which all occurrences of regex in searchRange of the receiver are replaced by template.
+    func replacingOccurrences(
+        of regex: NSRegularExpression,
+        with template: String,
+        options: NSRegularExpression.MatchingOptions = [],
+        range searchRange: Range<String.Index>? = nil) -> String {
+        let range = NSRange(searchRange ?? startIndex..<endIndex, in: self)
+        return regex.stringByReplacingMatches(in: self, options: options, range: range, withTemplate: template)
     }
     #endif
 
@@ -983,8 +1033,9 @@ public extension String {
     ///   "hue".padStart(10) -> "       hue"
     ///   "hue".padStart(10, with: "br") -> "brbrbrbhue"
     ///
-    /// - Parameter length: The target length to pad.
-    /// - Parameter string: Pad string. Default is " ".
+    /// - Parameters:
+    ///   - length: The target length to pad.
+    ///   - string: Pad string. Default is " ".
     @discardableResult
     mutating func padStart(_ length: Int, with string: String = " ") -> String {
         self = paddingStart(length, with: string)
@@ -996,8 +1047,9 @@ public extension String {
     ///   "hue".paddingStart(10) -> "       hue"
     ///   "hue".paddingStart(10, with: "br") -> "brbrbrbhue"
     ///
-    /// - Parameter length: The target length to pad.
-    /// - Parameter string: Pad string. Default is " ".
+    /// - Parameters:
+    ///   - length: The target length to pad.
+    ///   - string: Pad string. Default is " ".
     /// - Returns: The string with the padding on the start.
     func paddingStart(_ length: Int, with string: String = " ") -> String {
         guard count < length else { return self }
@@ -1019,8 +1071,9 @@ public extension String {
     ///   "hue".padEnd(10) -> "hue       "
     ///   "hue".padEnd(10, with: "br") -> "huebrbrbrb"
     ///
-    /// - Parameter length: The target length to pad.
-    /// - Parameter string: Pad string. Default is " ".
+    /// - Parameters:
+    ///   - length: The target length to pad.
+    ///   - string: Pad string. Default is " ".
     @discardableResult
     mutating func padEnd(_ length: Int, with string: String = " ") -> String {
         self = paddingEnd(length, with: string)
@@ -1032,8 +1085,9 @@ public extension String {
     ///   "hue".paddingEnd(10) -> "hue       "
     ///   "hue".paddingEnd(10, with: "br") -> "huebrbrbrb"
     ///
-    /// - Parameter length: The target length to pad.
-    /// - Parameter string: Pad string. Default is " ".
+    /// - Parameters:
+    ///   - length: The target length to pad.
+    ///   - string: Pad string. Default is " ".
     /// - Returns: The string with the padding on the end.
     func paddingEnd(_ length: Int, with string: String = " ") -> String {
         guard count < length else { return self }
@@ -1127,14 +1181,6 @@ public extension String {
 // MARK: - NSAttributedString
 
 public extension String {
-    #if canImport(UIKit)
-    private typealias Font = UIFont
-    #endif
-
-    #if canImport(AppKit) && !targetEnvironment(macCatalyst)
-    private typealias Font = NSFont
-    #endif
-
     #if os(iOS) || os(macOS)
     /// SwifterSwift: Bold string.
     var bold: NSAttributedString {
@@ -1222,6 +1268,9 @@ public extension String {
         return NSString(string: self)
     }
 
+    /// SwifterSwift: The full `NSRange` of the string.
+    var fullNSRange: NSRange { NSRange(startIndex..<endIndex, in: self) }
+
     /// SwifterSwift: NSString lastPathComponent.
     var lastPathComponent: String {
         return (self as NSString).lastPathComponent
@@ -1247,7 +1296,22 @@ public extension String {
         return (self as NSString).pathComponents
     }
 
-    /// SwifterSwift: NSString appendingPathComponent(str: String)
+    /// SwifterSwift: Convert an `NSRange` into `Range<String.Index>`.
+    /// - Parameter nsRange: The `NSRange` within the receiver.
+    /// - Returns: The equivalent `Range<String.Index>` of `nsRange` found within the receiving string.
+    func range(from nsRange: NSRange) -> Range<Index> {
+        guard let range = Range(nsRange, in: self) else { fatalError("Failed to find range \(nsRange) in \(self)") }
+        return range
+    }
+
+    /// SwifterSwift: Convert a `Range<String.Index>` into `NSRange`.
+    /// - Parameter range: The `Range<String.Index>` within the receiver.
+    /// - Returns: The equivalent `NSRange` of `range` found within the receiving string.
+    func nsRange(from range: Range<Index>) -> NSRange {
+        return NSRange(range, in: self)
+    }
+
+    /// SwifterSwift: NSString appendingPathComponent(str: String).
     ///
     /// - Note: This method only works with file paths (not, for example, string representations of URLs.
     ///   See NSString [appendingPathComponent(_:)](https://developer.apple.com/documentation/foundation/nsstring/1417069-appendingpathcomponent)
@@ -1257,12 +1321,20 @@ public extension String {
         return (self as NSString).appendingPathComponent(str)
     }
 
-    /// SwifterSwift: NSString appendingPathExtension(str: String)
+    /// SwifterSwift: NSString appendingPathExtension(str: String).
     ///
     /// - Parameter str: The extension to append to the receiver.
     /// - Returns: a new string made by appending to the receiver an extension separator followed by ext (if applicable).
     func appendingPathExtension(_ str: String) -> String? {
         return (self as NSString).appendingPathExtension(str)
+    }
+
+    /// SwifterSwift: Accesses a contiguous subrange of the collection’s elements.
+    /// - Parameter nsRange: A range of the collection’s indices. The bounds of the range must be valid indices of the collection.
+    /// - Returns: A slice of the receiving string.
+    subscript(bounds: NSRange) -> Substring {
+        guard let range = Range(bounds, in: self) else { fatalError("Failed to find range \(bounds) in \(self)") }
+        return self[range]
     }
 }
 

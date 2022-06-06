@@ -11,7 +11,7 @@ import UIKit
 // MARK: - Properties
 
 public extension URL {
-    /// SwifterSwift: Dictionary of the URL's query parameters
+    /// SwifterSwift: Dictionary of the URL's query parameters.
     var queryParameters: [String: String]? {
         guard let components = URLComponents(url: self, resolvingAgainstBaseURL: false),
             let queryItems = components.queryItems else { return nil }
@@ -36,6 +36,14 @@ public extension URL {
     init?(string: String?, relativeTo url: URL? = nil) {
         guard let string = string else { return nil }
         self.init(string: string, relativeTo: url)
+    }
+    
+    /**
+    SwifterSwift: Initializes a forced unwrapped `URL` from string. Can potentially crash if string is invalid.
+     - Parameter unsafeString: The URL string used to initialize the `URL`object.
+     */
+    init(unsafeString: String) {
+        self.init(string: unsafeString)!
     }
 }
 

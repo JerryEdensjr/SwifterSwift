@@ -12,17 +12,15 @@ public extension UITextView {
         attributedText = NSAttributedString(string: "")
     }
 
-    /// SwifterSwift: Scroll to the bottom of text view
+    /// SwifterSwift: Scroll to the bottom of text view.
     func scrollToBottom() {
-        // swiftlint:disable:next legacy_constructor
-        let range = NSMakeRange((text as NSString).length - 1, 1)
+        let range = NSRange(location: (text as NSString).length - 1, length: 1)
         scrollRangeToVisible(range)
     }
 
-    /// SwifterSwift: Scroll to the top of text view
+    /// SwifterSwift: Scroll to the top of text view.
     func scrollToTop() {
-        // swiftlint:disable:next legacy_constructor
-        let range = NSMakeRange(0, 1)
+        let range = NSRange(location: 0, length: 1)
         scrollRangeToVisible(range)
     }
 

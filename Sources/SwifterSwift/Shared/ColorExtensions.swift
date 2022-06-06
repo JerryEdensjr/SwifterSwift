@@ -51,7 +51,7 @@ public extension Color {
     // swiftlint:enable large_tuple
 
     // swiftlint:disable large_tuple
-    /// SwifterSwift: RGB components for a Color represented as CGFloat numbers (between 0 and 1)
+    /// SwifterSwift: RGB components for a Color represented as CGFloat numbers (between 0 and 1).
     ///
     ///     UIColor.red.rgbComponents.red -> 1.0
     ///     NSColor.green.rgbComponents.green -> 1.0
@@ -123,7 +123,7 @@ public extension Color {
     }
 
     #if !os(watchOS)
-    /// SwifterSwift: CoreImage.CIColor (read-only)
+    /// SwifterSwift: CoreImage.CIColor (read-only).
     var coreImageColor: CoreImage.CIColor? {
         return CoreImage.CIColor(color: self)
     }
@@ -174,14 +174,14 @@ public extension Color {
 // MARK: - Methods
 
 public extension Color {
-    /// SwifterSwift: Blend two Colors
+    /// SwifterSwift: Blend two Colors.
     ///
     /// - Parameters:
     ///   - color1: first color to blend
     ///   - intensity1: intensity of first color (default is 0.5)
     ///   - color2: second color to blend
     ///   - intensity2: intensity of second color (default is 0.5)
-    /// - Returns: Color created by blending first and seond colors.
+    /// - Returns: Color created by blending first and second colors.
     static func blend(_ color1: Color, intensity1: CGFloat = 0.5, with color2: Color,
                       intensity2: CGFloat = 0.5) -> Color {
         // http://stackoverflow.com/questions/27342715/blend-uicolors-in-swift
@@ -225,13 +225,13 @@ public extension Color {
         return Color(red: red, green: green, blue: blue, alpha: alpha)
     }
 
-    /// SwifterSwift: Lighten a color
+    /// SwifterSwift: Lighten a color.
     ///
     ///     let color = Color(red: r, green: g, blue: b, alpha: a)
     ///     let lighterColor: Color = color.lighten(by: 0.2)
     ///
-    /// - Parameter percentage: Percentage by which to lighten the color
-    /// - Returns: A lightened color
+    /// - Parameter percentage: Percentage by which to lighten the color.
+    /// - Returns: A lightened color.
     func lighten(by percentage: CGFloat = 0.2) -> Color {
         // https://stackoverflow.com/questions/38435308/swift-get-lighter-and-darker-color-variations-for-a-given-uicolor
         var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
@@ -242,13 +242,13 @@ public extension Color {
                      alpha: alpha)
     }
 
-    /// SwifterSwift: Darken a color
+    /// SwifterSwift: Darken a color.
     ///
     ///     let color = Color(red: r, green: g, blue: b, alpha: a)
     ///     let darkerColor: Color = color.darken(by: 0.2)
     ///
-    /// - Parameter percentage: Percentage by which to darken the color
-    /// - Returns: A darkened color
+    /// - Parameter percentage: Percentage by which to darken the color.
+    /// - Returns: A darkened color.
     func darken(by percentage: CGFloat = 0.2) -> Color {
         // https://stackoverflow.com/questions/38435308/swift-get-lighter-and-darker-color-variations-for-a-given-uicolor
         var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
@@ -305,8 +305,9 @@ public extension Color {
     ///   - transparency: optional transparency value (default is 1).
     convenience init?(hexString: String, transparency: CGFloat = 1) {
         var string = ""
-        if hexString.lowercased().hasPrefix("0x") {
-            string = hexString.replacingOccurrences(of: "0x", with: "")
+        let lowercaseHexString = hexString.lowercased()
+        if lowercaseHexString.hasPrefix("0x") {
+            string = lowercaseHexString.replacingOccurrences(of: "0x", with: "")
         } else if hexString.hasPrefix("#") {
             string = hexString.replacingOccurrences(of: "#", with: "")
         } else {
@@ -329,6 +330,33 @@ public extension Color {
         let green = (hexValue >> 8) & 0xFF
         let blue = hexValue & 0xFF
         self.init(red: red, green: green, blue: blue, transparency: trans)
+    }
+
+    /// SwifterSwift: Create Color from hexadecimal string in the format ARGB (alpha-red-green-blue).
+    ///
+    /// - Parameters:
+    ///   - argbHexString: hexadecimal string (examples: 7FEDE7F6, 0x7FEDE7F6, #7FEDE7F6, #f0ff, 0xFF0F, ..).
+    convenience init?(argbHexString: String) {
+        var string = argbHexString.replacingOccurrences(of: "0x", with: "").replacingOccurrences(of: "#", with: "")
+
+        if string.count <= 4 { // convert hex to long format if in short format
+            var str = ""
+            for character in string {
+                str.append(String(repeating: String(character), count: 2))
+            }
+            string = str
+        }
+
+        guard let hexValue = Int(string, radix: 16) else { return nil }
+
+        let hasAlpha = string.count == 8
+
+        let alpha = hasAlpha ? (hexValue >> 24) & 0xFF : 0xFF
+        let red = (hexValue >> 16) & 0xFF
+        let green = (hexValue >> 8) & 0xFF
+        let blue = hexValue & 0xFF
+
+        self.init(red: red, green: green, blue: blue, transparency: CGFloat(alpha) / 255)
     }
 
     /// SwifterSwift: Create Color from a complementary of a Color (if applicable).
@@ -362,10 +390,8 @@ public extension Color {
 
 public extension Color {
     /// SwifterSwift: Brand identity color of popular social media platform.
-    struct Social {
+    enum Social {
         // https://www.lockedowndesign.com/social-media-colors/
-
-        private init() {}
 
         /// SwifterSwift: red: 59, green: 89, blue: 152
         public static let facebook = Color(red: 59, green: 89, blue: 152)!
@@ -455,10 +481,8 @@ public extension Color {
 public extension Color {
     // swiftlint:disable type_body_length
     /// SwifterSwift: Google Material design colors palette.
-    struct Material {
+    enum Material {
         // https://material.google.com/style/color.html
-
-        private init() {}
 
         /// SwifterSwift: color red500
         public static let red = red500
@@ -1291,10 +1315,8 @@ public extension Color {
 
 public extension Color {
     /// SwifterSwift: CSS colors.
-    struct CSS {
+    enum CSS {
         // http://www.w3schools.com/colors/colors_names.asp
-
-        private init() {}
 
         /// SwifterSwift: hex #F0F8FF
         public static let aliceBlue = Color(hex: 0xF0F8FF)!
@@ -1746,7 +1768,7 @@ public extension Color {
 
 public extension Color {
     /// SwifterSwift: Flat UI colors
-    struct FlatUI {
+    enum FlatUI {
         // http://flatuicolors.com.
 
         /// SwifterSwift: hex #1ABC9C

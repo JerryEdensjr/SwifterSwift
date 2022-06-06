@@ -6,63 +6,47 @@ import XCTest
 #if canImport(Foundation)
 import Foundation
 
+#if canImport(UIKit)
+private typealias Font = UIFont
+#endif
+
+#if canImport(AppKit) && !targetEnvironment(macCatalyst)
+private typealias Font = NSFont
+#endif
+
 // swiftlint:disable:next type_body_length
 final class NSAttributedStringExtensionsTests: XCTestCase {
     func testBolded() {
-        #if os(iOS)
-        let string = NSAttributedString(string: "Bolded")
-        let out = string.bolded
-        let attributes = out.attributes(at: 0, effectiveRange: nil)
+        #if !os(Linux)
+        let unsizedAttributes = NSAttributedString(string: "Bolded").bolded.attributes
+        XCTAssertEqual((unsizedAttributes[.font] as? Font)?.fontName, Font.boldSystemFont(ofSize: 1).fontName)
 
-        let filterClosure: (NSAttributedString.Key, Any) -> Bool = { key, value in
-            return (key == NSAttributedString.Key
-                .font && ((value as? UIFont) == .boldSystemFont(ofSize: UIFont.systemFontSize)))
-        }
-
-        let filteredAttributes = attributes.filter { filterClosure($0, $1) }
-        XCTAssertEqual(filteredAttributes.count, 1)
+        let sizedAttributes = NSAttributedString(string: "Bolded", attributes: [.font: Font.systemFont(ofSize: 12)]).bolded.attributes
+        XCTAssertEqual((sizedAttributes[.font] as? Font), Font.boldSystemFont(ofSize: 12))
         #endif
     }
 
     func testUnderlined() {
         #if !os(Linux)
-        let string = NSAttributedString(string: "Underlined")
-        let out = string.underlined
-        let attributes = out.attributes(at: 0, effectiveRange: nil)
-        let filteredAttributes = attributes.filter { (key, value) -> Bool in
-            return (key == NSAttributedString.Key.underlineStyle &&
-                (value as? NSUnderlineStyle.RawValue) == NSUnderlineStyle.single.rawValue)
-        }
-
-        XCTAssertEqual(filteredAttributes.count, 1)
+        let attributes = NSAttributedString(string: "Underlined").underlined.attributes
+        XCTAssertEqual((attributes[.underlineStyle] as? NSUnderlineStyle.RawValue), NSUnderlineStyle.single.rawValue)
         #endif
     }
 
     func testItalicized() {
-        #if os(iOS)
-        let string = NSAttributedString(string: "Italicized")
-        let out = string.italicized
-        let attributes = out.attributes(at: 0, effectiveRange: nil)
-        let filteredAttributes = attributes.filter { (key, value) -> Bool in
-            return (key == NSAttributedString.Key
-                .font && (value as? UIFont) == .italicSystemFont(ofSize: UIFont.systemFontSize))
-        }
+        #if canImport(UIKit)
+        let unsizedAttributes = NSAttributedString(string: "Italicized").italicized.attributes
+        XCTAssertEqual((unsizedAttributes[.font] as? UIFont)?.fontName, UIFont.italicSystemFont(ofSize: 1).fontName)
 
-        XCTAssertEqual(filteredAttributes.count, 1)
+        let sizedAttributes = NSAttributedString(string: "Italicized", attributes: [.font: Font.systemFont(ofSize: 12)]).italicized.attributes
+        XCTAssertEqual((sizedAttributes[.font] as? UIFont), UIFont.italicSystemFont(ofSize: 12))
         #endif
     }
 
     func testStruckthrough() {
         #if !os(macOS) && !os(Linux)
-        let string = NSAttributedString(string: "Struck through")
-        let out = string.struckthrough
-        let attributes = out.attributes(at: 0, effectiveRange: nil)
-        let filteredAttributes = attributes.filter { (key, value) -> Bool in
-            return (key == NSAttributedString.Key
-                .strikethroughStyle && (value as? NSUnderlineStyle.RawValue) == NSUnderlineStyle.single.rawValue)
-        }
-
-        XCTAssertEqual(filteredAttributes.count, 1)
+        let attributes = NSAttributedString(string: "Struck through").struckthrough.attributes
+        XCTAssertEqual((attributes[.strikethroughStyle] as? NSUnderlineStyle.RawValue), NSUnderlineStyle.single.rawValue)
         #endif
     }
 
@@ -335,6 +319,106 @@ final class NSAttributedStringExtensionsTests: XCTestCase {
         XCTAssertEqual(string1.string, "Test Appending")
         #endif
     }
+
+    // MARK: - func joined(separator:)
+
+    #if canImport(AppKit) || canImport(UIKit)
+    private let firstStringToJoin = "Hello"
+    private let secondStringToJoin = " "
+    private let thirdStringToJoin = "World"
+
+    private var stringsToJoin: [NSAttributedString] {
+        let string1 = NSAttributedString(
+            string: firstStringToJoin,
+            attributes: [
+                .strokeWidth: NSNumber(value: 1),
+                .kern: NSNumber(value: 2)
+            ]
+        )
+        let string2 = NSAttributedString(
+            string: secondStringToJoin,
+            attributes: [
+                .expansion: NSNumber(value: 3),
+                .obliqueness: NSNumber(value: 4)
+            ]
+        )
+        let string3 = NSAttributedString(string: thirdStringToJoin, attributes: [:])
+        return [string1, string2, string3]
+    }
+
+    private func expectedAttrbiutedString(
+        with separator: String,
+        separatorAttrbiutes: [NSAttributedString.Key: Any]
+    ) -> NSAttributedString {
+        let expectation = NSMutableAttributedString(
+            string: firstStringToJoin + separator + secondStringToJoin + separator + thirdStringToJoin,
+            attributes: [:]
+        )
+
+        expectation.addAttributes([
+            .strokeWidth: NSNumber(value: 1),
+            .kern: NSNumber(value: 2)
+        ], range: NSRange(location: 0, length: firstStringToJoin.count))
+
+        expectation.addAttributes(
+            separatorAttrbiutes,
+            range: NSRange(location: firstStringToJoin.count, length: separator.count)
+        )
+
+        expectation.addAttributes([
+            .expansion: NSNumber(value: 3),
+            .obliqueness: NSNumber(value: 4)
+        ], range: NSRange(location: (firstStringToJoin + separator).count, length: secondStringToJoin.count))
+
+        expectation.addAttributes(
+            separatorAttrbiutes,
+            range: NSRange(location: (firstStringToJoin + separator + secondStringToJoin).count, length: separator.count)
+        )
+
+        return expectation
+    }
+
+    func testJoinedWithEmptySeparator() {
+        XCTAssertEqual(
+            stringsToJoin.joined(separator: ""),
+            expectedAttrbiutedString(with: "", separatorAttrbiutes: [:])
+        )
+    }
+
+    func testJoinedWithEmptyAttributedSeparator() {
+        XCTAssertEqual(
+            stringsToJoin.joined(separator: NSAttributedString(string: "")),
+            expectedAttrbiutedString(with: "", separatorAttrbiutes: [:])
+        )
+    }
+
+    func testJoinedWithNonEmptySeparator() {
+        XCTAssertEqual(
+            stringsToJoin.joined(separator: " non empty "),
+            expectedAttrbiutedString(with: " non empty ", separatorAttrbiutes: [:])
+        )
+    }
+
+    func testJoinedWithNonEmptyAttributedSeparator() {
+        XCTAssertEqual(
+            stringsToJoin.joined(separator: NSAttributedString(string: " non empty ", attributes: [
+                .expansion: NSNumber(value: 3),
+                .obliqueness: NSNumber(value: 4)
+            ])),
+            expectedAttrbiutedString(with: " non empty ", separatorAttrbiutes: [
+                .expansion: NSNumber(value: 3),
+                .obliqueness: NSNumber(value: 4)
+            ])
+        )
+    }
+
+    func testEmptyArrayJoinedWithSeparator() {
+        XCTAssertEqual(
+            [].joined(separator: NSAttributedString(string: "Hello")),
+            NSAttributedString(string: "")
+        )
+    }
+    #endif
 }
 
 #endif

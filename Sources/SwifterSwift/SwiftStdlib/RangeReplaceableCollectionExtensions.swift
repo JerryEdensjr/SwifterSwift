@@ -33,7 +33,7 @@ public extension RangeReplaceableCollection {
     ///     [1, 2, 3, 4].rotated(by: 3) -> [2,3,4,1]
     ///     [1, 2, 3, 4].rotated(by: -1) -> [2,3,4,1]
     ///
-    /// - Parameter places: Number of places that the array be rotated. If the value is positive the end becomes the start, if it negative it's that start becom the end.
+    /// - Parameter places: Number of places that the array be rotated. If the value is positive the end becomes the start, if it negative it's that start become the end.
     /// - Returns: The new rotated collection.
     func rotated(by places: Int) -> Self {
         // Inspired by: https://ruby-doc.org/core-2.2.0/Array.html#method-i-rotate
@@ -173,5 +173,23 @@ public extension RangeReplaceableCollection {
                 index(startIndex, offsetBy: indexRange.lowerBound)..<index(startIndex, offsetBy: indexRange.upperBound),
                 with: newValue)
         }
+    }
+    
+    /**
+     SwifterSwift: Adds a new element at the end of the array, mutates the array in place
+     - Parameter newElement: The optional element to append to the array
+     */
+    mutating func appendIfNonNil(_ newElement: Element?) {
+        guard let newElement = newElement else { return }
+        self.append(newElement)
+    }
+    
+    /**
+     SwifterSwift: Adds the elements of a sequence to the end of the array, mutates the array in place
+     - Parameter newElements: The optional sequence to append to the array
+     */
+    mutating func appendIfNonNil<S>(contentsOf newElements: S?) where Element == S.Element, S : Sequence {
+        guard let newElements = newElements else { return }
+        self.append(contentsOf: newElements)
     }
 }

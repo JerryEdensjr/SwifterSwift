@@ -11,22 +11,22 @@ final class UIViewExtensionsTests: XCTestCase {
     func testBorderColor() {
         let frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         let view = UIView(frame: frame)
-        view.borderColor = nil
-        XCTAssertNil(view.borderColor)
-        view.borderColor = UIColor.red
+        view.layerBorderColor = nil
+        XCTAssertNil(view.layerBorderColor)
+        view.layerBorderColor = UIColor.red
         XCTAssertNotNil(view.layer.borderColor)
-        XCTAssertEqual(view.borderColor!, UIColor.red)
+        XCTAssertEqual(view.layerBorderColor!, UIColor.red)
         XCTAssertEqual(view.layer.borderColor!.uiColor, UIColor.red)
     }
 
     func testBorderWidth() {
         let frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         let view = UIView(frame: frame)
-        view.borderWidth = 0
+        view.layerBorderWidth = 0
         XCTAssertEqual(view.layer.borderWidth, 0)
 
-        view.borderWidth = 5
-        XCTAssertEqual(view.borderWidth, 5)
+        view.layerBorderWidth = 5
+        XCTAssertEqual(view.layerBorderWidth, 5)
     }
 
     func testCornerRadius() {
@@ -34,8 +34,8 @@ final class UIViewExtensionsTests: XCTestCase {
         let view = UIView(frame: frame)
         XCTAssertEqual(view.layer.cornerRadius, 0)
 
-        view.cornerRadius = 50
-        XCTAssertEqual(view.cornerRadius, 50)
+        view.layerCornerRadius = 50
+        XCTAssertEqual(view.layerCornerRadius, 50)
     }
 
     func testFirstResponder() {
@@ -313,12 +313,19 @@ final class UIViewExtensionsTests: XCTestCase {
         XCTAssertEqual(view1.transform, view2.transform)
         XCTAssertEqual(view1.transform, view3.transform)
     }
-
+  
+    #if os(tvOS)
+    func testLoadFromNib() {
+        let bundle = Bundle(for: UIViewExtensionsTests.self)
+        XCTAssertNotNil(UIView.loadFromNib(named: "UIImageViewTvOS", bundle: bundle))
+    }
+    #else
     func testLoadFromNib() {
         let bundle = Bundle(for: UIViewExtensionsTests.self)
         XCTAssertNotNil(UIView.loadFromNib(named: "UIImageView", bundle: bundle))
         XCTAssertNotNil(UIView.loadFromNib(withClass: UIImageView.self, bundle: bundle))
     }
+    #endif
 
     func testRemoveSubviews() {
         let view = UIView()
@@ -467,6 +474,28 @@ final class UIViewExtensionsTests: XCTestCase {
         XCTAssertEqual(buttonSubview.ancestorView(withClass: UITableViewCell.self), tableViewCell)
         XCTAssertEqual(buttonSubview.ancestorView(withClass: UITableView.self), tableView)
     }
+  
+  func testSubviewsOfType() {
+      // Test view with subviews with no subviews
+      XCTAssertEqual(UIView().subviews(ofType: UILabel.self), [])
+          
+      // Test view with subviews that have subviews
+      let parentView = UIView()
+    
+      let childView = UIView()
+      let childViewSubViews = [UILabel(), UIButton(), UITextView(), UILabel(), UIImageView()]
+      childView.addSubviews(childViewSubViews)
+    
+      let childView2 = UIView()
+      let childView2SubViews = [UISegmentedControl(), UILabel(), UITextView(), UIImageView()]
+      childView2.addSubviews(childView2SubViews)
+    
+      parentView.addSubviews([childView, childView2])
+    
+      let expected = [childViewSubViews[0], childViewSubViews[3], childView2SubViews[1]]
+      XCTAssertEqual(parentView.subviews(ofType: UILabel.self), expected)
+      XCTAssertEqual(parentView.subviews(ofType: UITableViewCell.self), [])
+  }
 
     func testFindConstraint() {
         let view = UIView()

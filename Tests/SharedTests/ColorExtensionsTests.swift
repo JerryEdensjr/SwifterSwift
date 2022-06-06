@@ -351,6 +351,9 @@ final class ColorExtensionsTests: XCTestCase {
     func testFailableInit() {
         var color = Color(hexString: "0xFFFFFF")
         XCTAssertNotNil(color)
+        
+        color = Color(hexString: "0XFFAABB")
+        XCTAssertNotNil(color)
 
         color = Color(hexString: "#FFFFFF")
         XCTAssertNotNil(color)
@@ -369,6 +372,36 @@ final class ColorExtensionsTests: XCTestCase {
 
         color = Color(hexString: "FFFFFFF")
         XCTAssertNotNil(color)
+    }
+
+    func testInitARGB() {
+        var color = Color(argbHexString: "0xFFFF")
+        XCTAssertNotNil(color)
+        XCTAssertEqual(color!.rgbComponents.red, 0xFF)
+        XCTAssertEqual(color!.rgbComponents.green, 0xFF)
+        XCTAssertEqual(color!.rgbComponents.blue, 0xFF)
+        XCTAssertEqual(color!.alpha, 1.0)
+
+        color = Color(argbHexString: "#FFFFFFFFF")
+        XCTAssertNotNil(color)
+        XCTAssertEqual(color!.rgbComponents.red, 0xFF)
+        XCTAssertEqual(color!.rgbComponents.green, 0xFF)
+        XCTAssertEqual(color!.rgbComponents.blue, 0xFF)
+        XCTAssertEqual(color!.alpha, 1.0)
+
+        color = Color(argbHexString: "7F123456")
+        XCTAssertNotNil(color)
+        XCTAssertEqual(color!.rgbComponents.red, 0x12)
+        XCTAssertEqual(color!.rgbComponents.green, 0x34)
+        XCTAssertEqual(color!.rgbComponents.blue, 0x56)
+        XCTAssertEqual(color!.alpha, 0.5, accuracy: 0.01)
+
+        color = Color(argbHexString: "#9999")
+        XCTAssertNotNil(color)
+        XCTAssertEqual(color!.rgbComponents.red, 0x99)
+        XCTAssertEqual(color!.rgbComponents.green, 0x99)
+        XCTAssertEqual(color!.rgbComponents.blue, 0x99)
+        XCTAssertEqual(color!.alpha, 0.6)
     }
 
     func testInitWithComponents() {
