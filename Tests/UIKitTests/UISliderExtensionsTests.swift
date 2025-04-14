@@ -1,4 +1,4 @@
-// UISliderExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UISliderExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,6 +6,7 @@ import XCTest
 #if os(iOS)
 import UIKit
 
+@MainActor
 final class UISliderExtensionsTests: XCTestCase {
     func testCompletionCalledAnimated() {
         let slider = UISlider()

@@ -1,4 +1,4 @@
-// FloatExtensions.swift - Copyright 2020 SwifterSwift
+// FloatExtensions.swift - Copyright 2025 SwifterSwift
 
 #if canImport(CoreGraphics)
 import CoreGraphics
@@ -6,6 +6,8 @@ import CoreGraphics
 
 #if os(macOS) || os(iOS)
 import Darwin
+#elseif canImport(Android)
+import Android
 #elseif os(Linux)
 import Glibc
 #endif
@@ -41,7 +43,7 @@ infix operator **: PowerPrecedence
 ///   - lhs: base float.
 ///   - rhs: exponent float.
 /// - Returns: exponentiation result (4.4 ** 0.5 = 2.0976176963).
-func ** (lhs: Float, rhs: Float) -> Float {
+public func ** (lhs: Float, rhs: Float) -> Float {
     // http://nshipster.com/swift-operators/
     return pow(lhs, rhs)
 }

@@ -1,13 +1,14 @@
-// CAGradientLayerExtensionsTests.swift - Copyright 2020 SwifterSwift
+// CAGradientLayerExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
 
-#if !os(watchOS) && !os(Linux)
+#if !os(watchOS) && !os(Linux) && !os(Android)
 
 final class CAGradientLayerExtensionsTests: XCTestCase {
+    @available(macOS 10.14, *)
     func testInitWithGradientAttributes() {
-        let colors: [Color] = [.red, .blue, .orange, .yellow]
+        let colors: [SFColor] = [.red, .blue, .orange, .yellow]
         let locations: [CGFloat]? = [0, 0.3, 0.6, 1]
         let startPoint = CGPoint(x: 0.0, y: 0.5)
         let endPoint = CGPoint(x: 1.0, y: 0.5)

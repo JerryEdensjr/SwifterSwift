@@ -1,4 +1,4 @@
-// UIViewExtensions.swift - Copyright 2020 SwifterSwift
+// UIViewExtensions.swift - Copyright 2025 SwifterSwift
 
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
@@ -49,13 +49,33 @@ public extension UIView {
         /// SwifterSwift: easeInOut animation.
         case easeInOut
     }
+
+    /// SwifterSwift: Add gradient directions
+    struct GradientDirection: Sendable {
+        public static let topToBottom = GradientDirection(startPoint: CGPoint(x: 0.5, y: 0.0),
+                                                          endPoint: CGPoint(x: 0.5, y: 1.0))
+        public static let bottomToTop = GradientDirection(startPoint: CGPoint(x: 0.5, y: 1.0),
+                                                          endPoint: CGPoint(x: 0.5, y: 0.0))
+        public static let leftToRight = GradientDirection(startPoint: CGPoint(x: 0.0, y: 0.5),
+                                                          endPoint: CGPoint(x: 1.0, y: 0.5))
+        public static let rightToLeft = GradientDirection(startPoint: CGPoint(x: 1.0, y: 0.5),
+                                                          endPoint: CGPoint(x: 0.0, y: 0.5))
+
+        public let startPoint: CGPoint
+        public let endPoint: CGPoint
+
+        public init(startPoint: CGPoint, endPoint: CGPoint) {
+            self.startPoint = startPoint
+            self.endPoint = endPoint
+        }
+    }
 }
 
 // MARK: - Properties
 
 public extension UIView {
     /// SwifterSwift: Border color of view; also inspectable from Storyboard.
-    @IBInspectable var borderColor: UIColor? {
+    @IBInspectable var layerBorderColor: UIColor? {
         get {
             guard let color = layer.borderColor else { return nil }
             return UIColor(cgColor: color)
@@ -72,7 +92,7 @@ public extension UIView {
     }
 
     /// SwifterSwift: Border width of view; also inspectable from Storyboard.
-    @IBInspectable var borderWidth: CGFloat {
+    @IBInspectable var layerBorderWidth: CGFloat {
         get {
             return layer.borderWidth
         }
@@ -82,7 +102,7 @@ public extension UIView {
     }
 
     /// SwifterSwift: Corner radius of view; also inspectable from Storyboard.
-    @IBInspectable var cornerRadius: CGFloat {
+    @IBInspectable var layerCornerRadius: CGFloat {
         get {
             return layer.cornerRadius
         }
@@ -104,22 +124,16 @@ public extension UIView {
 
     /// SwifterSwift: Check if view is in RTL format.
     var isRightToLeft: Bool {
-        if #available(tvOS 10.0, *) {
-            return effectiveUserInterfaceLayoutDirection == .rightToLeft
-        } else {
-            return false
-        }
+        return effectiveUserInterfaceLayoutDirection == .rightToLeft
     }
 
     /// SwifterSwift: Take screenshot of view (if applicable).
     var screenshot: UIImage? {
-        UIGraphicsBeginImageContextWithOptions(layer.frame.size, false, 0)
-        defer {
-            UIGraphicsEndImageContext()
+        let size = layer.frame.size
+        guard size != .zero else { return nil }
+        return UIGraphicsImageRenderer(size: layer.frame.size).image { context in
+            layer.render(in: context.cgContext)
         }
-        guard let context = UIGraphicsGetCurrentContext() else { return nil }
-        layer.render(in: context)
-        return UIGraphicsGetImageFromCurrentImageContext()
     }
 
     /// SwifterSwift: Shadow color of view; also inspectable from Storyboard.
@@ -261,6 +275,16 @@ public extension UIView {
         layer.mask = shape
     }
 
+    /// SwifterSwift: Make the view circular.
+    ///
+    /// - Parameter diameter: This value will be set as the width and height of the view.
+    func makeCircle(diameter: CGFloat) {
+        clipsToBounds = true
+        bounds.size.height = diameter
+        bounds.size.width = diameter
+        layer.cornerRadius = diameter / 2
+    }
+
     /// SwifterSwift: Add shadow to view.
     ///
     /// - Note: This method only works with non-clear background color, or if the view has a `shadowPath` set.
@@ -270,7 +294,7 @@ public extension UIView {
     ///   - color: shadow color (default is #137992).
     ///   - radius: shadow radius (default is 3).
     ///   - offset: shadow offset (default is .zero).
-    ///   - opacity: shadow opacity (default is 0.5). It will also be affected by the `alpha` of `backgroundColor`
+    ///   - opacity: shadow opacity (default is 0.5). It will also be affected by the `alpha` of `backgroundColor`.
     func addShadow(
         ofColor color: UIColor = UIColor(red: 0.07, green: 0.47, blue: 0.57, alpha: 1.0),
         radius: CGFloat = 3,
@@ -290,11 +314,23 @@ public extension UIView {
         subviews.forEach { addSubview($0) }
     }
 
+    /// SwifterSwift: Make the view blurry.
+    ///
+    /// - Parameter style: UIBlurEffectStyle (default is .light).
+    func blur(withStyle style: UIBlurEffect.Style = .light) {
+        let blurEffect = UIBlurEffect(style: style)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight] // for supporting device rotation
+        addSubview(blurEffectView)
+        clipsToBounds = true
+    }
+
     /// SwifterSwift: Fade in view.
     ///
     /// - Parameters:
     ///   - duration: animation duration in seconds (default is 1 second).
-    ///   - completion: optional completion handler to run with animation finishes (default is nil)
+    ///   - completion: optional completion handler to run with animation finishes (default is nil).
     func fadeIn(duration: TimeInterval = 1, completion: ((Bool) -> Void)? = nil) {
         if isHidden {
             isHidden = false
@@ -308,7 +344,7 @@ public extension UIView {
     ///
     /// - Parameters:
     ///   - duration: animation duration in seconds (default is 1 second).
-    ///   - completion: optional completion handler to run with animation finishes (default is nil)
+    ///   - completion: optional completion handler to run with animation finishes (default is nil).
     func fadeOut(duration: TimeInterval = 1, completion: ((Bool) -> Void)? = nil) {
         if isHidden {
             isHidden = false
@@ -349,10 +385,12 @@ public extension UIView {
 
     /// SwifterSwift: Remove all gesture recognizers from view.
     func removeGestureRecognizers() {
-        gestureRecognizers?.forEach(removeGestureRecognizer)
+        try? gestureRecognizers?.forEach(removeGestureRecognizer)
     }
 
-    /// SwifterSwift: Attaches gesture recognizers to the view. Attaching gesture recognizers to a view defines the scope of the represented gesture, causing it to receive touches hit-tested to that view and all of its subviews. The view establishes a strong reference to the gesture recognizers.
+    /// SwifterSwift: Attaches gesture recognizers to the view. Attaching gesture recognizers to a view defines the
+    /// scope of the represented gesture, causing it to receive touches hit-tested to that view and all of its subviews.
+    /// The view establishes a strong reference to the gesture recognizers.
     ///
     /// - Parameter gestureRecognizers: The array of gesture recognizers to be added to the view.
     func addGestureRecognizers(_ gestureRecognizers: [UIGestureRecognizer]) {
@@ -361,7 +399,8 @@ public extension UIView {
         }
     }
 
-    /// SwifterSwift: Detaches gesture recognizers from the receiving view. This method releases gestureRecognizers in addition to detaching them from the view.
+    /// SwifterSwift: Detaches gesture recognizers from the receiving view. This method releases gestureRecognizers in
+    /// addition to detaching them from the view.
     ///
     /// - Parameter gestureRecognizers: The array of gesture recognizers to be removed from the view.
     func removeGestureRecognizers(_ gestureRecognizers: [UIGestureRecognizer]) {
@@ -386,7 +425,7 @@ public extension UIView {
         completion: ((Bool) -> Void)? = nil) {
         let angleWithType = (type == .degrees) ? .pi * angle / 180.0 : angle
         let aDuration = animated ? duration : 0
-        UIView.animate(withDuration: aDuration, delay: 0, options: .curveLinear, animations: { () -> Void in
+        UIView.animate(withDuration: aDuration, delay: 0, options: .curveLinear, animations: { () in
             self.transform = self.transform.rotated(by: angleWithType)
         }, completion: completion)
     }
@@ -406,9 +445,10 @@ public extension UIView {
         duration: TimeInterval = 1,
         completion: ((Bool) -> Void)? = nil) {
         let angleWithType = (type == .degrees) ? .pi * angle / 180.0 : angle
+        let currentAngle = atan2(transform.b, transform.a)
         let aDuration = animated ? duration : 0
         UIView.animate(withDuration: aDuration, animations: {
-            self.transform = self.transform.concatenating(CGAffineTransform(rotationAngle: angleWithType))
+            self.transform = self.transform.rotated(by: angleWithType - currentAngle)
         }, completion: completion)
     }
 
@@ -425,7 +465,7 @@ public extension UIView {
         duration: TimeInterval = 1,
         completion: ((Bool) -> Void)? = nil) {
         if animated {
-            UIView.animate(withDuration: duration, delay: 0, options: .curveLinear, animations: { () -> Void in
+            UIView.animate(withDuration: duration, delay: 0, options: .curveLinear, animations: { () in
                 self.transform = self.transform.scaledBy(x: offset.x, y: offset.y)
             }, completion: completion)
         } else {
@@ -437,7 +477,7 @@ public extension UIView {
     /// SwifterSwift: Shake view.
     ///
     /// - Parameters:
-    ///   - direction: shake direction (horizontal or vertical), (default is .horizontal)
+    ///   - direction: shake direction (horizontal or vertical), (default is .horizontal).
     ///   - duration: animation duration in seconds (default is 1 second).
     ///   - animationType: shake animation type (default is .easeOut).
     ///   - completion: optional completion handler to run with animation finishes (default is nil).
@@ -447,12 +487,11 @@ public extension UIView {
         animationType: ShakeAnimationType = .easeOut,
         completion: (() -> Void)? = nil) {
         CATransaction.begin()
-        let animation: CAKeyframeAnimation
-        switch direction {
+        let animation = switch direction {
         case .horizontal:
-            animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
+            CAKeyframeAnimation(keyPath: "transform.translation.x")
         case .vertical:
-            animation = CAKeyframeAnimation(keyPath: "transform.translation.y")
+            CAKeyframeAnimation(keyPath: "transform.translation.y")
         }
         switch animationType {
         case .linear:
@@ -471,12 +510,46 @@ public extension UIView {
         CATransaction.commit()
     }
 
+    /// SwifterSwift: Add Gradient Colors.
+    ///
+    ///     view.addGradient(
+    ///         colors: [.red, .blue],
+    ///         locations: [0.0, 1.0],
+    ///         direction: .topToBottom
+    ///     )
+    ///
+    /// - Parameters:
+    ///   - colors: An array of `SFColor` defining the color of each gradient stop.
+    ///   - locations: An array of `CGFloat` defining the location of each
+    ///                gradient stop as a value in the range [0, 1]. The values must be
+    ///                monotonically increasing.
+    ///   - direction: Struct type describing the direction of the gradient.
+    func addGradient(colors: [SFColor], locations: [CGFloat] = [0.0, 1.0], direction: GradientDirection) {
+        // <https://github.com/swiftdevcenter/GradientColorExample>
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = bounds
+        gradientLayer.colors = colors.map(\.cgColor)
+        gradientLayer.locations = locations.map { NSNumber(value: $0) }
+        gradientLayer.startPoint = direction.startPoint
+        gradientLayer.endPoint = direction.endPoint
+        layer.addSublayer(gradientLayer)
+    }
+
+    /// SwifterSwift: Removes the applied blur effect from the `UIView`.
+    func removeBlur() {
+        subviews
+            .lazy
+            .compactMap { $0 as? UIVisualEffectView }
+            .filter { $0.effect is UIBlurEffect }
+            .forEach { $0.removeFromSuperview() }
+    }
+
     /// SwifterSwift: Add Visual Format constraints.
     ///
     /// - Parameters:
-    ///   - withFormat: visual Format language
-    ///   - views: array of views which will be accessed starting with index 0 (example: [v0], [v1], [v2]..)
-    @available(iOS 9, *) func addConstraints(withFormat: String, views: UIView...) {
+    ///   - withFormat: visual Format language.
+    ///   - views: array of views which will be accessed starting with index 0 (example: [v0], [v1], [v2]..).
+    func addConstraints(withFormat: String, views: UIView...) {
         // https://videos.letsbuildthatapp.com/
         var viewsDictionary: [String: UIView] = [:]
         for (index, view) in views.enumerated() {
@@ -492,11 +565,10 @@ public extension UIView {
     }
 
     /// SwifterSwift: Anchor all sides of the view into it's superview.
-    @available(iOS 9, *)
     func fillToSuperview() {
         // https://videos.letsbuildthatapp.com/
         translatesAutoresizingMaskIntoConstraints = false
-        if let superview = superview {
+        if let superview {
             let left = leftAnchor.constraint(equalTo: superview.leftAnchor)
             let right = rightAnchor.constraint(equalTo: superview.rightAnchor)
             let top = topAnchor.constraint(equalTo: superview.topAnchor)
@@ -505,21 +577,21 @@ public extension UIView {
         }
     }
 
-    /// SwifterSwift: Add anchors from any side of the current view into the specified anchors and returns the newly added constraints.
+    /// SwifterSwift: Add anchors from any side of the current view into the specified anchors and returns the newly
+    /// added constraints.
     ///
     /// - Parameters:
-    ///   - top: current view's top anchor will be anchored into the specified anchor
-    ///   - left: current view's left anchor will be anchored into the specified anchor
-    ///   - bottom: current view's bottom anchor will be anchored into the specified anchor
-    ///   - right: current view's right anchor will be anchored into the specified anchor
-    ///   - topConstant: current view's top anchor margin
-    ///   - leftConstant: current view's left anchor margin
-    ///   - bottomConstant: current view's bottom anchor margin
-    ///   - rightConstant: current view's right anchor margin
-    ///   - widthConstant: current view's width
-    ///   - heightConstant: current view's height
+    ///   - top: current view's top anchor will be anchored into the specified anchor.
+    ///   - left: current view's left anchor will be anchored into the specified anchor.
+    ///   - bottom: current view's bottom anchor will be anchored into the specified anchor.
+    ///   - right: current view's right anchor will be anchored into the specified anchor.
+    ///   - topConstant: current view's top anchor margin.
+    ///   - leftConstant: current view's left anchor margin.
+    ///   - bottomConstant: current view's bottom anchor margin.
+    ///   - rightConstant: current view's right anchor margin.
+    ///   - widthConstant: current view's width.
+    ///   - heightConstant: current view's height.
     /// - Returns: array of newly added constraints (if applicable).
-    @available(iOS 9, *)
     @discardableResult
     func anchor(
         top: NSLayoutYAxisAnchor? = nil,
@@ -537,19 +609,19 @@ public extension UIView {
 
         var anchors = [NSLayoutConstraint]()
 
-        if let top = top {
+        if let top {
             anchors.append(topAnchor.constraint(equalTo: top, constant: topConstant))
         }
 
-        if let left = left {
+        if let left {
             anchors.append(leftAnchor.constraint(equalTo: left, constant: leftConstant))
         }
 
-        if let bottom = bottom {
+        if let bottom {
             anchors.append(bottomAnchor.constraint(equalTo: bottom, constant: -bottomConstant))
         }
 
-        if let right = right {
+        if let right {
             anchors.append(rightAnchor.constraint(equalTo: right, constant: -rightConstant))
         }
 
@@ -561,7 +633,7 @@ public extension UIView {
             anchors.append(heightAnchor.constraint(equalToConstant: heightConstant))
         }
 
-        anchors.forEach { $0.isActive = true }
+        NSLayoutConstraint.activate(anchors)
 
         return anchors
     }
@@ -569,7 +641,6 @@ public extension UIView {
     /// SwifterSwift: Anchor center X into current view's superview with a constant margin value.
     ///
     /// - Parameter constant: constant of the anchor constraint (default is 0).
-    @available(iOS 9, *)
     func anchorCenterXToSuperview(constant: CGFloat = 0) {
         // https://videos.letsbuildthatapp.com/
         translatesAutoresizingMaskIntoConstraints = false
@@ -581,7 +652,6 @@ public extension UIView {
     /// SwifterSwift: Anchor center Y into current view's superview with a constant margin value.
     ///
     /// - Parameter withConstant: constant of the anchor constraint (default is 0).
-    @available(iOS 9, *)
     func anchorCenterYToSuperview(constant: CGFloat = 0) {
         // https://videos.letsbuildthatapp.com/
         translatesAutoresizingMaskIntoConstraints = false
@@ -590,8 +660,7 @@ public extension UIView {
         }
     }
 
-    /// SwifterSwift: Anchor center X and Y into current view's superview
-    @available(iOS 9, *)
+    /// SwifterSwift: Anchor center X and Y into current view's superview.
     func anchorCenterSuperview() {
         // https://videos.letsbuildthatapp.com/
         anchorCenterXToSuperview()
@@ -614,6 +683,23 @@ public extension UIView {
     func ancestorView<T: UIView>(withClass _: T.Type) -> T? {
         return ancestorView(where: { $0 is T }) as? T
     }
+
+    /// SwifterSwift: Returns all the subviews of a given type recursively in the
+    /// view hierarchy rooted on the view it its called.
+    ///
+    /// - Parameter ofType: Class of the view to search.
+    /// - Returns: All subviews with a specified type.
+    func subviews<T>(ofType _: T.Type) -> [T] {
+        var views = [T]()
+        for subview in subviews {
+            if let view = subview as? T {
+                views.append(view)
+            } else if !subview.subviews.isEmpty {
+                views.append(contentsOf: subview.subviews(ofType: T.self))
+            }
+        }
+        return views
+    }
 }
 
 // MARK: - Constraints
@@ -623,9 +709,9 @@ public extension UIView {
     /// and attribute. This will enumerate ancestors since constraints are
     /// always added to the common ancestor.
     ///
-    /// - Parameter attribute: the attribute to find
-    /// - Parameter at: the view to find
-    /// - Returns: matching constraint
+    /// - Parameter attribute: the attribute to find.
+    /// - Parameter at: the view to find.
+    /// - Returns: matching constraint.
     func findConstraint(attribute: NSLayoutConstraint.Attribute, for view: UIView) -> NSLayoutConstraint? {
         let constraint = constraints.first {
             ($0.firstAttribute == attribute && $0.firstItem as? UIView == view) ||
@@ -634,32 +720,32 @@ public extension UIView {
         return constraint ?? superview?.findConstraint(attribute: attribute, for: view)
     }
 
-    /// SwifterSwift: First width constraint for this view
+    /// SwifterSwift: First width constraint for this view.
     var widthConstraint: NSLayoutConstraint? {
         findConstraint(attribute: .width, for: self)
     }
 
-    /// SwifterSwift: First height constraint for this view
+    /// SwifterSwift: First height constraint for this view.
     var heightConstraint: NSLayoutConstraint? {
         findConstraint(attribute: .height, for: self)
     }
 
-    /// SwifterSwift: First leading constraint for this view
+    /// SwifterSwift: First leading constraint for this view.
     var leadingConstraint: NSLayoutConstraint? {
         findConstraint(attribute: .leading, for: self)
     }
 
-    /// SwifterSwift: First trailing constraint for this view
+    /// SwifterSwift: First trailing constraint for this view.
     var trailingConstraint: NSLayoutConstraint? {
         findConstraint(attribute: .trailing, for: self)
     }
 
-    /// SwifterSwift: First top constraint for this view
+    /// SwifterSwift: First top constraint for this view.
     var topConstraint: NSLayoutConstraint? {
         findConstraint(attribute: .top, for: self)
     }
 
-    /// SwifterSwift: First bottom constraint for this view
+    /// SwifterSwift: First bottom constraint for this view.
     var bottomConstraint: NSLayoutConstraint? {
         findConstraint(attribute: .bottom, for: self)
     }

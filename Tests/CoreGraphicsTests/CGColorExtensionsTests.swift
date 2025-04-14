@@ -1,4 +1,4 @@
-// CGColorExtensionsTests.swift - Copyright 2020 SwifterSwift
+// CGColorExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest

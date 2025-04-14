@@ -1,4 +1,4 @@
-// CGPointExtensions.swift - Copyright 2020 SwifterSwift
+// CGPointExtensions.swift - Copyright 2025 SwifterSwift
 
 #if canImport(CoreGraphics)
 import CoreGraphics
@@ -62,11 +62,11 @@ public extension CGPoint {
     ///     // point1 = CGPoint(x: 40, y: 40)
     ///
     /// - Parameters:
-    ///   - lhs: self
+    ///   - lhs: `self`.
     ///   - rhs: CGPoint to add.
     static func += (lhs: inout CGPoint, rhs: CGPoint) {
-        // swiftlint:disable:next shorthand_operator
-        lhs = lhs + rhs
+        lhs.x += rhs.x
+        lhs.y += rhs.y
     }
 
     /// SwifterSwift: Subtract two CGPoints.
@@ -92,14 +92,14 @@ public extension CGPoint {
     ///     // point1 = CGPoint(x: -20, y: -20)
     ///
     /// - Parameters:
-    ///   - lhs: self
+    ///   - lhs: `self`.
     ///   - rhs: CGPoint to subtract.
     static func -= (lhs: inout CGPoint, rhs: CGPoint) {
-        // swiftlint:disable:next shorthand_operator
-        lhs = lhs - rhs
+        lhs.x -= rhs.x
+        lhs.y -= rhs.y
     }
 
-    /// SwifterSwift: Multiply a CGPoint with a scalar
+    /// SwifterSwift: Multiply a CGPoint with a scalar.
     ///
     ///     let point1 = CGPoint(x: 10, y: 10)
     ///     let scalar = point1 * 5
@@ -113,22 +113,22 @@ public extension CGPoint {
         return CGPoint(x: point.x * scalar, y: point.y * scalar)
     }
 
-    /// SwifterSwift: Multiply self with a scalar
+    /// SwifterSwift: Multiply self with a scalar.
     ///
     ///     let point1 = CGPoint(x: 10, y: 10)
     ///     point *= 5
     ///     // point1 = CGPoint(x: 50, y: 50)
     ///
     /// - Parameters:
-    ///   - point: self.
+    ///   - point: `self`.
     ///   - scalar: scalar value.
     /// - Returns: result of multiplication of the given CGPoint with the scalar.
     static func *= (point: inout CGPoint, scalar: CGFloat) {
-        // swiftlint:disable:next shorthand_operator
-        point = point * scalar
+        point.x *= scalar
+        point.y *= scalar
     }
 
-    /// SwifterSwift: Multiply a CGPoint with a scalar
+    /// SwifterSwift: Multiply a CGPoint with a scalar.
     ///
     ///     let point1 = CGPoint(x: 10, y: 10)
     ///     let scalar = 5 * point1

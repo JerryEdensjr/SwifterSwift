@@ -1,4 +1,4 @@
-// SKProductExtensions.swift - Copyright 2020 SwifterSwift
+// SKProductExtensions.swift - Copyright 2025 SwifterSwift
 
 #if canImport(StoreKit)
 import StoreKit
@@ -11,7 +11,7 @@ public extension SKProduct {
         return priceFormatter
     }()
 
-    /// SwifterSwift: Localized price of SKProduct
+    /// SwifterSwift: Localized price of SKProduct.
     var localizedPrice: String? {
         let formatter = SKProduct.priceFormatter
         formatter.locale = priceLocale

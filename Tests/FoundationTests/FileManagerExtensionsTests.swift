@@ -1,4 +1,4 @@
-// FileManagerExtensionsTests.swift - Copyright 2020 SwifterSwift
+// FileManagerExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -8,7 +8,7 @@ import Foundation
 
 final class FileManagerExtensionsTests: XCTestCase {
     func testJSONFromFileAtPath() {
-        #if !os(Linux)
+        #if !os(Linux) && !os(Android)
         do {
             let bundle = Bundle(for: FileManagerExtensionsTests.self)
             let filePath = bundle.path(forResource: "test", ofType: "json")
@@ -40,7 +40,7 @@ final class FileManagerExtensionsTests: XCTestCase {
     }
 
     func testJSONFromFileWithFilename() {
-        #if !os(Linux)
+        #if !os(Linux) && !os(Android)
         do {
             var filename = "test.json" // With extension
             var json = try FileManager.default.jsonFromFile(withFilename: filename, at: FileManagerExtensionsTests.self)
@@ -70,7 +70,7 @@ final class FileManagerExtensionsTests: XCTestCase {
     }
 
     func testInvalidFile() {
-        #if !os(Linux)
+        #if !os(Linux) && !os(Android)
         let filename = "another_test.not_json"
         do {
             let json = try FileManager.default.jsonFromFile(withFilename: filename, at: FileManagerExtensionsTests.self)
@@ -79,26 +79,22 @@ final class FileManagerExtensionsTests: XCTestCase {
         #endif
     }
 
-    func testCreateTemporaryDirectory() {
-        do {
-            let fileManager = FileManager.default
-            let tempDirectory = try fileManager.createTemporaryDirectory()
-            XCTAssertFalse(tempDirectory.path.isEmpty)
+    func testCreateTemporaryDirectory() throws {
+        let fileManager = FileManager.default
+        let tempDirectory = try fileManager.createTemporaryDirectory()
+        XCTAssertFalse(tempDirectory.path.isEmpty)
 
-            var isDirectory = ObjCBool(false)
-            XCTAssert(fileManager.fileExists(atPath: tempDirectory.path, isDirectory: &isDirectory))
-            XCTAssertTrue(isDirectory.boolValue)
-            XCTAssert(try fileManager.contentsOfDirectory(atPath: tempDirectory.path).isEmpty)
+        var isDirectory = ObjCBool(false)
+        XCTAssert(fileManager.fileExists(atPath: tempDirectory.path, isDirectory: &isDirectory))
+        XCTAssertTrue(isDirectory.boolValue)
+        XCTAssert(try fileManager.contentsOfDirectory(atPath: tempDirectory.path).isEmpty)
 
-            let tempFile = tempDirectory.appendingPathComponent(ProcessInfo.processInfo.globallyUniqueString)
-            XCTAssert(fileManager.createFile(atPath: tempFile.path, contents: Data(), attributes: nil))
-            XCTAssertFalse(try fileManager.contentsOfDirectory(atPath: tempDirectory.path).isEmpty)
-            XCTAssertNotNil(fileManager.contents(atPath: tempFile.path))
+        let tempFile = tempDirectory.appendingPathComponent(ProcessInfo.processInfo.globallyUniqueString)
+        XCTAssert(fileManager.createFile(atPath: tempFile.path, contents: Data(), attributes: nil))
+        XCTAssertFalse(try fileManager.contentsOfDirectory(atPath: tempDirectory.path).isEmpty)
+        XCTAssertNotNil(fileManager.contents(atPath: tempFile.path))
 
-            try fileManager.removeItem(at: tempDirectory)
-        } catch {
-            XCTFail("\(error)")
-        }
+        try fileManager.removeItem(at: tempDirectory)
     }
 }
 

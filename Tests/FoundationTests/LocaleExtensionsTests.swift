@@ -1,4 +1,4 @@
-// LocaleExtensionsTests.swift - Copyright 2020 SwifterSwift
+// LocaleExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -23,12 +23,17 @@ final class LocaleExtensionsTests: XCTestCase {
     func testFlagEmoji() {
         XCTAssertEqual(Locale.flagEmoji(forRegionCode: "AC"), "🇦🇨")
         XCTAssertEqual(Locale.flagEmoji(forRegionCode: "ZW"), "🇿🇼")
-        #if !os(Linux)
+        #if !os(Linux) && !os(Android)
         XCTAssertNil(Locale.flagEmoji(forRegionCode: ""))
         XCTAssertNil(Locale.flagEmoji(forRegionCode: "ac"))
         #endif
 
-        for regionCode in Locale.isoRegionCodes {
+        let regionCodes = if #available(macOS 13, iOS 16, tvOS 16, *) {
+            Locale.Region.isoRegions.map(\.identifier)
+        } else {
+            Locale.isoRegionCodes
+        }
+        for regionCode in regionCodes {
             XCTAssertNotNil(Locale.flagEmoji(forRegionCode: regionCode))
         }
     }

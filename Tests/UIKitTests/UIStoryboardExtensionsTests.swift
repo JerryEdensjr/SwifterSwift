@@ -1,4 +1,4 @@
-// UIStoryboardExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UIStoryboardExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,6 +6,7 @@ import XCTest
 #if os(iOS)
 import UIKit
 
+@MainActor
 final class UIStoryboardExtensionsTests: XCTestCase {
     func testMainStoryboard() {
         XCTAssertNil(UIStoryboard.main)

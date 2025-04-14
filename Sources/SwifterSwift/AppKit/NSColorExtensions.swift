@@ -1,4 +1,4 @@
-// NSColorExtensions.swift - Copyright 2020 SwifterSwift
+// NSColorExtensions.swift - Copyright 2025 SwifterSwift
 
 #if canImport(AppKit) && !targetEnvironment(macCatalyst)
 import AppKit

@@ -1,4 +1,4 @@
-// CalendarExtensionTest.swift - Copyright 2020 SwifterSwift
+// CalendarExtensionTest.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest

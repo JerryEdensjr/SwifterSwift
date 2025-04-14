@@ -1,4 +1,4 @@
-// DoubleExtensions.swift - Copyright 2020 SwifterSwift
+// DoubleExtensions.swift - Copyright 2025 SwifterSwift
 
 #if canImport(CoreGraphics)
 import CoreGraphics
@@ -6,6 +6,8 @@ import CoreGraphics
 
 #if os(macOS) || os(iOS)
 import Darwin
+#elseif canImport(Android)
+import Android
 #elseif os(Linux)
 import Glibc
 #endif
@@ -41,7 +43,7 @@ infix operator **: PowerPrecedence
 ///   - lhs: base double.
 ///   - rhs: exponent double.
 /// - Returns: exponentiation result (example: 4.4 ** 0.5 = 2.0976176963).
-func ** (lhs: Double, rhs: Double) -> Double {
+public func ** (lhs: Double, rhs: Double) -> Double {
     // http://nshipster.com/swift-operators/
     return pow(lhs, rhs)
 }

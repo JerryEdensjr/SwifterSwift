@@ -1,4 +1,4 @@
-// DictionaryExtensionsTests.swift - Copyright 2020 SwifterSwift
+// DictionaryExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -84,8 +84,8 @@ final class DictionaryExtensionsTests: XCTestCase {
     }
 
     func testOperatorPlus() {
-        let dict: [String: String] = ["key1": "value1"]
-        let dict2: [String: String] = ["key2": "value2"]
+        let dict = ["key1": "value1"]
+        let dict2 = ["key2": "value2"]
         let result = dict + dict2
         XCTAssert(result.keys.contains("key1"))
         XCTAssert(result.keys.contains("key2"))
@@ -100,8 +100,8 @@ final class DictionaryExtensionsTests: XCTestCase {
     }
 
     func testOperatorPlusEqual() {
-        var dict: [String: String] = ["key1": "value1"]
-        let dict2: [String: String] = ["key2": "value2"]
+        var dict = ["key1": "value1"]
+        let dict2 = ["key2": "value2"]
         dict += dict2
         XCTAssert(dict.keys.contains("key1"))
         XCTAssert(dict.keys.contains("key2"))
@@ -126,7 +126,6 @@ final class DictionaryExtensionsTests: XCTestCase {
     }
 
     func testCompactMapKeysAndValues() {
-        // swiftlint:disable:next nesting
         enum IntWord: String {
             case zero
             case one
@@ -162,5 +161,30 @@ final class DictionaryExtensionsTests: XCTestCase {
             Dictionary(grouping: array2, by: \String.count),
             [6: ["Bryant"], 5: ["James"], 4: ["Wade", "John"], 0: ["", ""]])
         XCTAssertEqual(Dictionary(grouping: array3, by: \String.count), [:])
+    }
+
+    func testGetByKeys() {
+        let dict = ["James": 100,
+                    "Wade": 200,
+                    "Bryant": 500,
+                    "John": 600,
+                    "Jack": 1000]
+        let picked = dict.pick(keys: ["James", "Wade", "Jack"])
+        let empty1 = dict.pick(keys: ["Pippen", "Rodman"])
+        XCTAssertEqual(picked, ["James": 100, "Wade": 200, "Jack": 1000])
+        XCTAssertTrue(empty1.isEmpty)
+
+        let optionalValuesDict = ["James": 100,
+                                  "Wade": nil,
+                                  "Bryant": 500,
+                                  "John": nil,
+                                  "Jack": 1000]
+
+        let pickedWithOptionals = optionalValuesDict.pick(keys: ["James", "Bryant", "John"])
+        XCTAssertEqual(pickedWithOptionals, ["James": Optional(100), "Bryant": Optional(500), "John": nil])
+
+        let emptyDict = [String: Int]()
+        let empty3 = emptyDict.pick(keys: ["James", "Bryant", "John"])
+        XCTAssertTrue(empty3.isEmpty)
     }
 }

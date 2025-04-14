@@ -1,4 +1,4 @@
-// UILayoutPriorityExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UILayoutPriorityExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 #if os(iOS) || os(tvOS)
 

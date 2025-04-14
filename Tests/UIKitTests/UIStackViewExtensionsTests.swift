@@ -1,4 +1,4 @@
-// UIStackViewExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UIStackViewExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,7 +6,8 @@ import XCTest
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
 
-final class UIStackViewExtensionsTest: XCTestCase {
+@MainActor
+final class UIStackViewExtensionsTests: XCTestCase {
     // MARK: - Initializers
 
     func testInitWithViews() {
@@ -57,6 +58,50 @@ final class UIStackViewExtensionsTest: XCTestCase {
         stack.addArrangedSubview(view2)
         stack.removeArrangedSubviews()
         XCTAssert(stack.arrangedSubviews.isEmpty)
+    }
+
+    func testSwap() {
+        let view1 = UIView()
+        let view2 = UIView()
+        let view3 = UIView()
+        let view4 = UIView()
+        let view5 = UIView()
+        let view6 = UIView()
+        let stack = UIStackView(arrangedSubviews: [view1, view2, view3, view4, view5])
+        stack.swap(view1, view3)
+        stack.swap(view2, view5)
+        XCTAssertEqual(stack.arrangedSubviews.firstIndex(of: view1), 2)
+        XCTAssertEqual(stack.arrangedSubviews.firstIndex(of: view2), 4)
+        XCTAssertEqual(stack.arrangedSubviews.firstIndex(of: view3), 0)
+        XCTAssertEqual(stack.arrangedSubviews.firstIndex(of: view4), 3)
+        XCTAssertEqual(stack.arrangedSubviews.firstIndex(of: view5), 1)
+
+        stack.swap(view5, view6)
+        XCTAssertEqual(stack.arrangedSubviews.firstIndex(of: view5), 1)
+        XCTAssertNil(stack.arrangedSubviews.firstIndex(of: view6))
+
+        let swapExpectation = expectation(description: "views swapped")
+        stack.swap(view4, view3, animated: true, duration: 0.5) { _ in
+            swapExpectation.fulfill()
+        }
+        XCTAssertEqual(stack.arrangedSubviews.firstIndex(of: view3), 3)
+        XCTAssertEqual(stack.arrangedSubviews.firstIndex(of: view4), 0)
+        waitForExpectations(timeout: 1.0)
+    }
+
+    func testBackgroundViewColor() {
+        let stack = UIStackView()
+        stack.backgroundViewColor = nil
+        XCTAssertNil(stack.backgroundViewColor)
+
+        stack.backgroundViewColor = .red
+        XCTAssertNotNil(stack.backgroundViewColor)
+
+        XCTAssertEqual(stack.backgroundViewColor!, UIColor.red)
+
+        if #available(iOS 14, *) {
+            XCTAssertEqual(stack.backgroundColor!, UIColor.red)
+        }
     }
 }
 

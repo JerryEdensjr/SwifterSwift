@@ -1,4 +1,4 @@
-// SKNodeExtensionTests.swift - Copyright 2020 SwifterSwift
+// SKNodeExtensionTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,6 +6,7 @@ import XCTest
 #if canImport(SpriteKit)
 import SpriteKit
 
+@MainActor
 final class SKNodeExtensionTests: XCTestCase {
     func testDescendants() {
         let scene = SKScene()

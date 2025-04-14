@@ -11,17 +11,17 @@ on:
 jobs:
   Darwin:
     name: Darwin
-    runs-on: macos-latest
+    runs-on: macos-15
     env:
       PROJECT: SwifterSwift.xcodeproj
-      DEVELOPER_DIR: /Applications/Xcode_11.4.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_16.app/Contents/Developer
     steps:
     - uses: actions/checkout@v1
     - name: Bundle Install
       run: bundle install
     - name: Brew Upgrade
       run: |
-        brew update
+        brew update-reset
         brew bundle --no-upgrade
     - name: Test iOS
       run: |
@@ -29,7 +29,7 @@ jobs:
         bash <(curl -s https://codecov.io/bash) -cF ios -J 'SwifterSwift'
       env:
           SCHEME: SwifterSwift-iOS
-          DESTINATION: platform=iOS Simulator,name=iPhone 11
+          DESTINATION: platform=iOS Simulator,name=iPhone 15
     - name: Test MacOS
       run: |
         xcodebuild clean build test -project $PROJECT -scheme $SCHEME -destination "$DESTINATION" | XCPRETTY_JSON_FILE_OUTPUT="xcodebuild-macos.json" xcpretty -f `xcpretty-json-formatter`
@@ -43,12 +43,12 @@ jobs:
         bash <(curl -s https://codecov.io/bash) -cF tvos -J 'SwifterSwift'
       env:
           SCHEME: SwifterSwift-tvOS
-          DESTINATION: platform=tvOS Simulator,name=Apple TV 4K (at 1080p)
+          DESTINATION: platform=tvOS Simulator,name=Apple TV
     - name: Build WatchOS
       run: xcodebuild clean build -project $PROJECT -scheme $SCHEME -destination "$DESTINATION"
       env:
           SCHEME: SwifterSwift-watchOS
-          DESTINATION: name=Apple Watch Series 5 - 40mm
+          DESTINATION: platform=watchOS Simulator,name=Apple Watch Series 10 (42mm)
   
     - name: Danger Swift
       # Hack to by pass the key invalidation mechanism
@@ -58,23 +58,23 @@ jobs:
           bundle exec danger --verbose
       
   Swiftlint:
-    runs-on: macos-latest
+    runs-on: macos-15
     name: SwiftLint
     steps: 
       - uses: actions/checkout@v1
       - name: SwiftLint
         run: |
-          brew update
+          brew update-reset
           brew bundle --no-upgrade
           swiftlint
   CocoaPods:
     name: CocoaPods
-    runs-on: macos-latest
+    runs-on: macos-15
     strategy:
       matrix:
         platform: ['ios', 'macos', 'tvos', 'watchos']
     env:
-      DEVELOPER_DIR: /Applications/Xcode_11.4.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_16.app/Contents/Developer
     steps:
     - uses: actions/checkout@v1
     - name: Bundle Install
@@ -83,9 +83,16 @@ jobs:
       run: bundle exec pod lib lint --skip-tests --allow-warnings --verbose --platforms=${{ matrix.platform }} 
       
   Linux:
-    runs-on: [ubuntu-16.04] 
-    container: swift:5.2.3
+    runs-on: [ubuntu-24.04]
+    container: swift:6.0.1
     steps:
       - uses: actions/checkout@v1
       - name: Linux
-        run: swift test --enable-test-discovery --parallel
+        run: swift test --parallel
+
+  Android:
+    runs-on: [ubuntu-24.04]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Android Tests
+        uses: skiptools/swift-android-action@v2

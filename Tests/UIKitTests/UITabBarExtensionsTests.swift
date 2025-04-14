@@ -1,4 +1,4 @@
-// UITabBarExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UITabBarExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,6 +6,7 @@ import XCTest
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
 
+@MainActor
 final class UITabBarExtensionsTests: XCTestCase {
     func testSetColors() {
         let frame = CGRect(x: 0, y: 0, width: 300, height: 44)

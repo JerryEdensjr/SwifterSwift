@@ -1,4 +1,4 @@
-// StringExtensions.swift - Copyright 2020 SwifterSwift
+// StringExtensions.swift - Copyright 2025 SwifterSwift
 
 #if canImport(Foundation)
 import Foundation
@@ -25,6 +25,11 @@ public extension String {
     ///		"SGVsbG8gV29ybGQh".base64Decoded = Optional("Hello World!")
     ///
     var base64Decoded: String? {
+        if let data = Data(base64Encoded: self,
+                           options: .ignoreUnknownCharacters) {
+            return String(data: data, encoding: .utf8)
+        }
+
         let remainder = count % 4
 
         var padding = ""
@@ -110,7 +115,7 @@ public extension String {
     ///		"".firstCharacterAsString -> nil
     ///
     var firstCharacterAsString: String? {
-        guard let first = first else { return nil }
+        guard let first else { return nil }
         return String(first)
     }
 
@@ -164,7 +169,7 @@ public extension String {
     ///     "Mama".isPalindrome -> false
     ///
     var isPalindrome: Bool {
-        let letters = filter { $0.isLetter }
+        let letters = filter(\.isLetter)
         guard !letters.isEmpty else { return false }
         let midIndex = letters.index(letters.startIndex, offsetBy: letters.count / 2)
         let firstHalf = letters[letters.startIndex..<midIndex]
@@ -175,7 +180,8 @@ public extension String {
     #if canImport(Foundation)
     /// SwifterSwift: Check if string is valid email format.
     ///
-    /// - Note: Note that this property does not validate the email address against an email server. It merely attempts to determine whether its format is suitable for an email address.
+    /// - Note: Note that this property does not validate the email address against an email server. It merely attempts
+    /// to determine whether its format is suitable for an email address.
     ///
     ///		"john@doe.com".isValidEmail -> true
     ///
@@ -242,7 +248,8 @@ public extension String {
     #endif
 
     #if canImport(Foundation)
-    /// SwifterSwift: Check if string is a valid Swift number. Note: In North America, "." is the decimal separator, while in many parts of Europe "," is used,
+    /// SwifterSwift: Check if string is a valid Swift number. Note: In North America, "." is the decimal separator,
+    /// while in many parts of Europe "," is used.
     ///
     ///		"123".isNumeric -> true
     ///     "1.3".isNumeric -> true (en_US)
@@ -252,7 +259,7 @@ public extension String {
     var isNumeric: Bool {
         let scanner = Scanner(string: self)
         scanner.locale = NSLocale.current
-        #if os(Linux) || targetEnvironment(macCatalyst)
+        #if os(Linux) || os(Android) || targetEnvironment(macCatalyst)
         return scanner.scanDecimal() != nil && scanner.isAtEnd
         #else
         return scanner.scanDecimal(nil) && scanner.isAtEnd
@@ -278,7 +285,7 @@ public extension String {
     ///		"".lastCharacterAsString -> nil
     ///
     var lastCharacterAsString: String? {
-        guard let last = last else { return nil }
+        guard let last else { return nil }
         return String(last)
     }
 
@@ -407,7 +414,7 @@ public extension String {
     #endif
 
     #if canImport(Foundation)
-    /// SwifterSwift: Escaped string for inclusion in a regular expression pattern
+    /// SwifterSwift: Escaped string for inclusion in a regular expression pattern.
     ///
     /// "hello ^$ there" -> "hello \\^\\$ there"
     ///
@@ -427,17 +434,18 @@ public extension String {
     #endif
 
     #if canImport(Foundation)
-    /// SwifterSwift: Check if the given string contains only white spaces
+    /// SwifterSwift: Check if the given string contains only white spaces.
     var isWhitespace: Bool {
         return trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
     #endif
 
     #if os(iOS) || os(tvOS)
-    /// SwifterSwift: Check if the given string spelled correctly
+    /// SwifterSwift: Check if the given string spelled correctly.
+    @MainActor
     var isSpelledCorrectly: Bool {
         let checker = UITextChecker()
-        let range = NSRange(location: 0, length: utf16.count)
+        let range = NSRange(startIndex..<endIndex, in: self)
 
         let misspelledRange = checker.rangeOfMisspelledWord(
             in: self,
@@ -510,10 +518,39 @@ public extension String {
     #if canImport(Foundation)
     /// SwifterSwift: Returns a localized string, with an optional comment for translators.
     ///
-    ///        "Hello world".localized -> Hallo Welt
+    ///        "Hello world".localized() -> Hallo Welt
     ///
-    func localized(comment: String = "") -> String {
-        return NSLocalizedString(self, comment: comment)
+    /// - Parameters:
+    ///   - tableName: The name of the table containing the key-value pairs. Also, the suffix for the strings file (a
+    /// file with the.strings extension) to store the localized string. This defaults to the table in
+    /// `Localizable.strings` when tableName is nil or an empty string.
+    ///   - bundle: The bundle containing the table’s strings file. The main bundle is used if one isn’t specified.
+    ///   - value: The localized string for the development locale. For other locales, return this value if key isn’t
+    /// found in the table.
+    ///   - comment: The comment to place above the key-value pair in the strings file. This parameter provides
+    /// the translator with some context about the localized string’s presentation to the user.
+    /// - Returns: Localized string. Please refer to the Xcode documentation of `NSLocalizedString()` API for details.
+    func localized(
+        tableName: String? = nil,
+        bundle: Bundle = Bundle.main,
+        value: String = "",
+        comment: String = "") -> String {
+        return NSLocalizedString(self, tableName: tableName, bundle: bundle, value: value, comment: comment)
+    }
+    #endif
+
+    #if canImport(Foundation)
+    /// SwifterSwift: Returns a format localized string.
+    ///
+    ///    "%d Swift %d Objective-C".formatLocalized(1, 2) -> 1 Swift 2 Objective-C
+    ///
+    /// - Parameters:
+    ///   - comment: Optional comment for translators.
+    ///   - arguments: Arguments used by format.
+    /// - Returns: Format localized string.
+    func formatLocalized(comment: String = "", _ arguments: (any CVarArg)...) -> String {
+        let format = NSLocalizedString(self, comment: comment)
+        return String(format: format, arguments: arguments)
     }
     #endif
 
@@ -541,15 +578,15 @@ public extension String {
     }
 
     #if canImport(Foundation)
-    /// SwifterSwift: an array of all words in a string
+    /// SwifterSwift: an array of all words in a string.
     ///
     ///		"Swift is amazing".words() -> ["Swift", "is", "amazing"]
     ///
     /// - Returns: The words contained in a string.
     func words() -> [String] {
         // https://stackoverflow.com/questions/42822838
-        let chararacterSet = CharacterSet.whitespacesAndNewlines.union(.punctuationCharacters)
-        let comps = components(separatedBy: chararacterSet)
+        let characterSet = CharacterSet.whitespacesAndNewlines.union(.punctuationCharacters)
+        let comps = components(separatedBy: characterSet)
         return comps.filter { !$0.isEmpty }
     }
     #endif
@@ -562,8 +599,8 @@ public extension String {
     /// - Returns: The count of words contained in a string.
     func wordCount() -> Int {
         // https://stackoverflow.com/questions/42822838
-        let chararacterSet = CharacterSet.whitespacesAndNewlines.union(.punctuationCharacters)
-        let comps = components(separatedBy: chararacterSet)
+        let characterSet = CharacterSet.whitespacesAndNewlines.union(.punctuationCharacters)
+        let comps = components(separatedBy: characterSet)
         let words = comps.filter { !$0.isEmpty }
         return words.count
     }
@@ -576,7 +613,7 @@ public extension String {
     ///
     /// - Returns: The string in slug format.
     func toSlug() -> String {
-        let lowercased = self.lowercased()
+        let lowercased = lowercased()
         let latinized = lowercased.folding(options: .diacriticInsensitive, locale: Locale.current)
         let withDashes = latinized.replacingOccurrences(of: " ", with: "-")
 
@@ -615,19 +652,74 @@ public extension String {
     ///        "Hello World!"[safe: 6..<11] -> "World"
     ///        "Hello World!"[safe: 21..<110] -> nil
     ///
+    /// - Parameter range: Range expression.
+    subscript(safe range: Range<Int>) -> String? {
+        guard range.lowerBound >= 0,
+              range.upperBound <= count else {
+            return nil
+        }
+
+        return String(self[range])
+    }
+
+    /// SwifterSwift: Safely subscript string within a given range.
+    ///
     ///        "Hello World!"[safe: 6...11] -> "World!"
     ///        "Hello World!"[safe: 21...110] -> nil
     ///
     /// - Parameter range: Range expression.
-    subscript<R>(safe range: R) -> String? where R: RangeExpression, R.Bound == Int {
-        let range = range.relative(to: Int.min..<Int.max)
+    subscript(safe range: ClosedRange<Int>) -> String? {
         guard range.lowerBound >= 0,
-            let lowerIndex = index(startIndex, offsetBy: range.lowerBound, limitedBy: endIndex),
-            let upperIndex = index(startIndex, offsetBy: range.upperBound, limitedBy: endIndex) else {
+              range.upperBound < count else {
             return nil
         }
 
-        return String(self[lowerIndex..<upperIndex])
+        return String(self[range])
+    }
+
+    /// SwifterSwift: Safely subscript string within a given range.
+    ///
+    ///        "Hello World!"[safe: ..<5] -> "Hello"
+    ///        "Hello World!"[safe: ..<(-110)] -> nil
+    ///
+    /// - Parameter range: Range expression.
+    subscript(safe range: PartialRangeUpTo<Int>) -> String? {
+        guard range.upperBound >= 0,
+              range.upperBound <= count else {
+            return nil
+        }
+
+        return String(self[range])
+    }
+
+    /// SwifterSwift: Safely subscript string within a given range.
+    ///
+    ///        "Hello World!"[safe: ...10] -> "Hello World"
+    ///        "Hello World!"[safe: ...110] -> nil
+    ///
+    /// - Parameter range: Range expression.
+    subscript(safe range: PartialRangeThrough<Int>) -> String? {
+        guard range.upperBound >= 0,
+              range.upperBound < count else {
+            return nil
+        }
+
+        return String(self[range])
+    }
+
+    /// SwifterSwift: Safely subscript string within a given range.
+    ///
+    ///        "Hello World!"[safe: 6...] -> "World!"
+    ///        "Hello World!"[safe: 50...] -> nil
+    ///
+    /// - Parameter range: Range expression.
+    subscript(safe range: PartialRangeFrom<Int>) -> String? {
+        guard range.lowerBound >= 0,
+              range.lowerBound < count else {
+            return nil
+        }
+
+        return String(self[range])
     }
 
     #if os(iOS) || os(macOS)
@@ -674,7 +766,7 @@ public extension String {
     ///        "".firstCharacterUppercased() -> ""
     ///
     mutating func firstCharacterUppercased() {
-        guard let first = first else { return }
+        guard let first else { return }
         self = String(first).uppercased() + dropFirst()
     }
 
@@ -787,7 +879,8 @@ public extension String {
     /// - Parameters:
     ///   - index: string index the slicing should start from.
     ///   - length: amount of characters to be sliced after given index.
-    /// - Returns: sliced substring of length number of characters (if applicable) (example: "Hello World".slicing(from: 6, length: 5) -> "World")
+    /// - Returns: sliced substring of length number of characters (if applicable) (example: "Hello World".slicing(from:
+    /// 6, length: 5) -> "World").
     func slicing(from index: Int, length: Int) -> String? {
         guard length >= 0, index >= 0, index < count else { return nil }
         guard index.advanced(by: length) <= count else {
@@ -961,20 +1054,67 @@ public extension String {
     /// SwifterSwift: Verify if string matches the regex pattern.
     ///
     /// - Parameter pattern: Pattern to verify.
-    /// - Returns: true if string matches the pattern.
+    /// - Returns: `true` if string matches the pattern.
     func matches(pattern: String) -> Bool {
         return range(of: pattern, options: .regularExpression, range: nil, locale: nil) != nil
     }
     #endif
 
     #if canImport(Foundation)
-    /// SwifterSwift: Overload Swift's 'contains' operator for matching regex pattern
+    /// SwifterSwift: Verify if string matches the regex.
     ///
-    /// - Parameter lhs: String to check on regex pattern.
-    /// - Parameter rhs: Regex pattern to match against.
+    /// - Parameters:
+    ///   - regex: Regex to verify.
+    ///   - options: The matching options to use.
+    /// - Returns: `true` if string matches the regex.
+    func matches(regex: NSRegularExpression, options: NSRegularExpression.MatchingOptions = []) -> Bool {
+        let range = NSRange(startIndex..<endIndex, in: self)
+        return regex.firstMatch(in: self, options: options, range: range) != nil
+    }
+    #endif
+
+    #if canImport(Foundation)
+    /// SwifterSwift: Overload Swift's 'contains' operator for matching regex pattern.
+    ///
+    /// - Parameters:
+    ///   - lhs: String to check on regex pattern.
+    ///   - rhs: Regex pattern to match against.
     /// - Returns: true if string matches the pattern.
     static func ~= (lhs: String, rhs: String) -> Bool {
-        return lhs.range(of: rhs, options: .regularExpression) != nil
+        return rhs.range(of: lhs, options: .regularExpression) != nil
+    }
+    #endif
+
+    #if canImport(Foundation)
+    /// SwifterSwift: Overload Swift's 'contains' operator for matching regex.
+    ///
+    /// - Parameters:
+    ///   - lhs: String to check on regex.
+    ///   - rhs: Regex to match against.
+    /// - Returns: `true` if there is at least one match for the regex in the string.
+    static func ~= (lhs: NSRegularExpression, rhs: String) -> Bool {
+        let range = NSRange(rhs.startIndex..<rhs.endIndex, in: rhs)
+        return lhs.firstMatch(in: rhs, range: range) != nil
+    }
+    #endif
+
+    #if canImport(Foundation)
+    /// SwifterSwift: Returns a new string in which all occurrences of a regex in a specified range of the receiver are
+    /// replaced by the template.
+    /// - Parameters:
+    ///   - regex Regex to replace.
+    ///   - template: The template to replace the regex.
+    ///   - options: The matching options to use
+    ///   - searchRange: The range in the receiver in which to search.
+    /// - Returns: A new string in which all occurrences of regex in searchRange of the receiver are replaced by
+    /// template.
+    func replacingOccurrences(
+        of regex: NSRegularExpression,
+        with template: String,
+        options: NSRegularExpression.MatchingOptions = [],
+        range searchRange: Range<String.Index>? = nil) -> String {
+        let range = NSRange(searchRange ?? startIndex..<endIndex, in: self)
+        return regex.stringByReplacingMatches(in: self, options: options, range: range, withTemplate: template)
     }
     #endif
 
@@ -983,8 +1123,9 @@ public extension String {
     ///   "hue".padStart(10) -> "       hue"
     ///   "hue".padStart(10, with: "br") -> "brbrbrbhue"
     ///
-    /// - Parameter length: The target length to pad.
-    /// - Parameter string: Pad string. Default is " ".
+    /// - Parameters:
+    ///   - length: The target length to pad.
+    ///   - string: Pad string. Default is " ".
     @discardableResult
     mutating func padStart(_ length: Int, with string: String = " ") -> String {
         self = paddingStart(length, with: string)
@@ -996,8 +1137,9 @@ public extension String {
     ///   "hue".paddingStart(10) -> "       hue"
     ///   "hue".paddingStart(10, with: "br") -> "brbrbrbhue"
     ///
-    /// - Parameter length: The target length to pad.
-    /// - Parameter string: Pad string. Default is " ".
+    /// - Parameters:
+    ///   - length: The target length to pad.
+    ///   - string: Pad string. Default is " ".
     /// - Returns: The string with the padding on the start.
     func paddingStart(_ length: Int, with string: String = " ") -> String {
         guard count < length else { return self }
@@ -1019,8 +1161,9 @@ public extension String {
     ///   "hue".padEnd(10) -> "hue       "
     ///   "hue".padEnd(10, with: "br") -> "huebrbrbrb"
     ///
-    /// - Parameter length: The target length to pad.
-    /// - Parameter string: Pad string. Default is " ".
+    /// - Parameters:
+    ///   - length: The target length to pad.
+    ///   - string: Pad string. Default is " ".
     @discardableResult
     mutating func padEnd(_ length: Int, with string: String = " ") -> String {
         self = paddingEnd(length, with: string)
@@ -1032,8 +1175,9 @@ public extension String {
     ///   "hue".paddingEnd(10) -> "hue       "
     ///   "hue".paddingEnd(10, with: "br") -> "huebrbrbrb"
     ///
-    /// - Parameter length: The target length to pad.
-    /// - Parameter string: Pad string. Default is " ".
+    /// - Parameters:
+    ///   - length: The target length to pad.
+    ///   - string: Pad string. Default is " ".
     /// - Returns: The string with the padding on the end.
     func paddingEnd(_ length: Int, with string: String = " ") -> String {
         guard count < length else { return self }
@@ -1097,50 +1241,22 @@ public extension String {
     /// - Parameter base64: base64 string.
     init?(base64: String) {
         guard let decodedData = Data(base64Encoded: base64) else { return nil }
-        guard let str = String(data: decodedData, encoding: .utf8) else { return nil }
-        self.init(str)
+        self.init(data: decodedData, encoding: .utf8)
     }
     #endif
-
-    /// SwifterSwift: Create a new random string of given length.
-    ///
-    ///		String(randomOfLength: 10) -> "gY8r3MHvlQ"
-    ///
-    /// - Parameter length: number of characters in string.
-    init(randomOfLength length: Int) {
-        guard length > 0 else {
-            self.init()
-            return
-        }
-
-        let base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        var randomString = ""
-        for _ in 1...length {
-            randomString.append(base.randomElement()!)
-        }
-        self = randomString
-    }
 }
 
-#if !os(Linux)
+#if !os(Linux) && !os(Android)
 
 // MARK: - NSAttributedString
 
 public extension String {
-    #if canImport(UIKit)
-    private typealias Font = UIFont
-    #endif
-
-    #if canImport(AppKit) && !targetEnvironment(macCatalyst)
-    private typealias Font = NSFont
-    #endif
-
     #if os(iOS) || os(macOS)
     /// SwifterSwift: Bold string.
     var bold: NSAttributedString {
         return NSMutableAttributedString(
             string: self,
-            attributes: [.font: Font.boldSystemFont(ofSize: Font.systemFontSize)])
+            attributes: [.font: SFFont.boldSystemFont(ofSize: SFFont.systemFontSize)])
     }
     #endif
 
@@ -1174,7 +1290,7 @@ public extension String {
     ///
     /// - Parameter color: text color.
     /// - Returns: a NSAttributedString versions of string colored with given color.
-    func colored(with color: Color) -> NSAttributedString {
+    func colored(with color: SFColor) -> NSAttributedString {
         return NSMutableAttributedString(string: self, attributes: [.foregroundColor: color])
     }
     #endif
@@ -1222,6 +1338,9 @@ public extension String {
         return NSString(string: self)
     }
 
+    /// SwifterSwift: The full `NSRange` of the string.
+    var fullNSRange: NSRange { NSRange(startIndex..<endIndex, in: self) }
+
     /// SwifterSwift: NSString lastPathComponent.
     var lastPathComponent: String {
         return (self as NSString).lastPathComponent
@@ -1247,7 +1366,22 @@ public extension String {
         return (self as NSString).pathComponents
     }
 
-    /// SwifterSwift: NSString appendingPathComponent(str: String)
+    /// SwifterSwift: Convert an `NSRange` into `Range<String.Index>`.
+    /// - Parameter nsRange: The `NSRange` within the receiver.
+    /// - Returns: The equivalent `Range<String.Index>` of `nsRange` found within the receiving string.
+    func range(from nsRange: NSRange) -> Range<Index> {
+        guard let range = Range(nsRange, in: self) else { fatalError("Failed to find range \(nsRange) in \(self)") }
+        return range
+    }
+
+    /// SwifterSwift: Convert a `Range<String.Index>` into `NSRange`.
+    /// - Parameter range: The `Range<String.Index>` within the receiver.
+    /// - Returns: The equivalent `NSRange` of `range` found within the receiving string.
+    func nsRange(from range: Range<Index>) -> NSRange {
+        return NSRange(range, in: self)
+    }
+
+    /// SwifterSwift: NSString appendingPathComponent(str: String).
     ///
     /// - Note: This method only works with file paths (not, for example, string representations of URLs.
     ///   See NSString [appendingPathComponent(_:)](https://developer.apple.com/documentation/foundation/nsstring/1417069-appendingpathcomponent)
@@ -1257,12 +1391,22 @@ public extension String {
         return (self as NSString).appendingPathComponent(str)
     }
 
-    /// SwifterSwift: NSString appendingPathExtension(str: String)
+    /// SwifterSwift: NSString appendingPathExtension(str: String).
     ///
     /// - Parameter str: The extension to append to the receiver.
-    /// - Returns: a new string made by appending to the receiver an extension separator followed by ext (if applicable).
+    /// - Returns: a new string made by appending to the receiver an extension separator followed by ext (if
+    /// applicable).
     func appendingPathExtension(_ str: String) -> String? {
         return (self as NSString).appendingPathExtension(str)
+    }
+
+    /// SwifterSwift: Accesses a contiguous subrange of the collection’s elements.
+    /// - Parameter nsRange: A range of the collection’s indices. The bounds of the range must be valid indices of the
+    /// collection.
+    /// - Returns: A slice of the receiving string.
+    subscript(bounds: NSRange) -> Substring {
+        guard let range = Range(bounds, in: self) else { fatalError("Failed to find range \(bounds) in \(self)") }
+        return self[range]
     }
 }
 

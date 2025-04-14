@@ -1,4 +1,4 @@
-// FileManagerExtensions.swift - Copyright 2020 SwifterSwift
+// FileManagerExtensions.swift - Copyright 2025 SwifterSwift
 
 #if canImport(Foundation)
 import Foundation
@@ -9,8 +9,8 @@ public extension FileManager {
     /// - Parameters:
     ///   - path: JSON file path.
     ///   - readingOptions: JSONSerialization reading options.
-    /// - Returns: Optional dictionary.
     /// - Throws: Throws any errors thrown by Data creation or JSON serialization.
+    /// - Returns: Optional dictionary.
     func jsonFromFile(
         atPath path: String,
         readingOptions: JSONSerialization.ReadingOptions = .allowFragments) throws -> [String: Any]? {
@@ -20,15 +20,15 @@ public extension FileManager {
         return json as? [String: Any]
     }
 
-    #if !os(Linux)
+    #if !os(Linux) && !os(Android)
     /// SwifterSwift: Read from a JSON file with a given filename.
     ///
     /// - Parameters:
     ///   - filename: File to read.
     ///   - bundleClass: Bundle where the file is associated.
     ///   - readingOptions: JSONSerialization reading options.
-    /// - Returns: Optional dictionary.
     /// - Throws: Throws any errors thrown by Data creation or JSON serialization.
+    /// - Returns: Optional dictionary.
     func jsonFromFile(
         withFilename filename: String,
         at bundleClass: AnyClass? = nil,
@@ -50,34 +50,20 @@ public extension FileManager {
     }
     #endif
 
-    /// SwifterSwift: Creates a unique directory for saving temporary files. The directory can be used to create multiple temporary files used for a common purpose.
+    /// SwifterSwift: Creates a unique directory for saving temporary files. The directory can be used to create
+    /// multiple temporary files used for a common purpose.
     ///
     ///     let tempDirectory = try fileManager.createTemporaryDirectory()
     ///     let tempFile1URL = tempDirectory.appendingPathComponent(ProcessInfo().globallyUniqueString)
     ///     let tempFile2URL = tempDirectory.appendingPathComponent(ProcessInfo().globallyUniqueString)
     ///
-    /// - Returns: A URL to a new directory for saving temporary files.
     /// - Throws: An error if a temporary directory cannot be found or created.
+    /// - Returns: A URL to a new directory for saving temporary files.
     func createTemporaryDirectory() throws -> URL {
-        #if !os(Linux)
-        let temporaryDirectoryURL: URL
-        if #available(OSX 10.12, tvOS 10.0, watchOS 3.0, *) {
-            temporaryDirectoryURL = temporaryDirectory
-        } else {
-            temporaryDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-        }
-        return try url(for: .itemReplacementDirectory,
-                       in: .userDomainMask,
-                       appropriateFor: temporaryDirectoryURL,
-                       create: true)
-        #else
-        let envs = ProcessInfo.processInfo.environment
-        let env = envs["TMPDIR"] ?? envs["TEMP"] ?? envs["TMP"] ?? "/tmp"
-        let dir = "/\(env)/file-temp.XXXXXX"
-        var template = [UInt8](dir.utf8).map { Int8($0) } + [Int8(0)]
-        guard mkdtemp(&template) != nil else { throw CocoaError.error(.featureUnsupported) }
-        return URL(fileURLWithPath: String(cString: template))
-        #endif
+        try url(for: .itemReplacementDirectory,
+                in: .userDomainMask,
+                appropriateFor: temporaryDirectory,
+                create: true)
     }
 }
 

@@ -1,4 +1,4 @@
-// UINavigationControllerExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UINavigationControllerExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,12 +6,11 @@ import XCTest
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
 
+@MainActor
 final class UINavigationControllerExtensionsTests: XCTestCase {
     func testPushViewController() {
         let navigationController = UINavigationController()
         let vcToPush = UIViewController()
-
-        navigationController.pushViewController(vcToPush, animated: false)
 
         let exp = expectation(description: "pushCallback")
 
@@ -30,7 +29,7 @@ final class UINavigationControllerExtensionsTests: XCTestCase {
         navigationController.pushViewController(vcToPush, animated: false)
         XCTAssertEqual(navigationController.viewControllers.count, 2)
 
-        let exp = expectation(description: "pushCallback")
+        let exp = expectation(description: "popCallback")
         navigationController.popViewController(animated: false) {
             XCTAssertEqual(navigationController.viewControllers.count, 1)
             XCTAssertEqual(navigationController.topViewController, rootVC)
@@ -53,5 +52,18 @@ final class UINavigationControllerExtensionsTests: XCTestCase {
         XCTAssertNotNil(color)
         XCTAssertEqual(color!, .red)
     }
+
+    #if !os(tvOS)
+    func testHideBottomBar() {
+        let rootVC = UIViewController()
+        let navigationController = UINavigationController(rootViewController: rootVC)
+        let vcToPush = UIViewController()
+        let tabVC = UITabBarController()
+        tabVC.viewControllers = [navigationController]
+        navigationController.pushViewController(vcToPush, hidesBottomBar: true, animated: false)
+        XCTAssert(vcToPush.hidesBottomBarWhenPushed)
+        XCTAssert(tabVC.tabBar.isHidden)
+    }
+    #endif
 }
 #endif

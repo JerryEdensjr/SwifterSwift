@@ -1,4 +1,4 @@
-// CGFloatExtensions.swift - Copyright 2020 SwifterSwift
+// CGFloatExtensions.swift - Copyright 2025 SwifterSwift
 
 #if canImport(CoreGraphics)
 import CoreGraphics

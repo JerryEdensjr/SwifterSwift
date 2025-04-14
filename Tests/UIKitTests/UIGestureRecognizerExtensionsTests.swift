@@ -1,4 +1,4 @@
-// UIGestureRecognizerExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UIGestureRecognizerExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,6 +6,7 @@ import XCTest
 #if os(iOS) && !os(watchOS)
 import UIKit
 
+@MainActor
 final class UIGestureRecognizerExtensionsTests: XCTestCase {
     func testRemoveFromView() {
         let view = UIImageView()

@@ -1,4 +1,4 @@
-// UICollectionViewExtensions.swift - Copyright 2020 SwifterSwift
+// UICollectionViewExtensions.swift - Copyright 2025 SwifterSwift
 
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
@@ -108,7 +108,7 @@ public extension UICollectionView {
     /// - Parameters:
     ///   - nib: Nib file used to create the collectionView cell.
     ///   - name: UICollectionViewCell type.
-    func register<T: UICollectionViewCell>(nib: UINib?, forCellWithClass name: T.Type) {
+    func register(nib: UINib?, forCellWithClass name: (some UICollectionViewCell).Type) {
         register(nib, forCellWithReuseIdentifier: String(describing: name))
     }
 
@@ -125,8 +125,8 @@ public extension UICollectionView {
     ///   - nib: Nib file used to create the reusable view.
     ///   - kind: the kind of supplementary view to retrieve. This value is defined by the layout object.
     ///   - name: UICollectionReusableView type.
-    func register<T: UICollectionReusableView>(nib: UINib?, forSupplementaryViewOfKind kind: String,
-                                               withClass name: T.Type) {
+    func register(nib: UINib?, forSupplementaryViewOfKind kind: String,
+                  withClass name: (some UICollectionReusableView).Type) {
         register(nib, forSupplementaryViewOfKind: kind, withReuseIdentifier: String(describing: name))
     }
 
@@ -136,7 +136,7 @@ public extension UICollectionView {
     /// - Parameters:
     ///   - name: UICollectionViewCell type.
     ///   - bundleClass: Class in which the Bundle instance will be based on.
-    func register<T: UICollectionViewCell>(nibWithCellClass name: T.Type, at bundleClass: AnyClass? = nil) {
+    func register(nibWithCellClass name: (some UICollectionViewCell).Type, at bundleClass: AnyClass? = nil) {
         let identifier = String(describing: name)
         var bundle: Bundle?
 
@@ -147,26 +147,26 @@ public extension UICollectionView {
         register(UINib(nibName: identifier, bundle: bundle), forCellWithReuseIdentifier: identifier)
     }
 
-    /// SwifterSwift: Safely scroll to possibly invalid IndexPath
+    /// SwifterSwift: Safely scroll to possibly invalid IndexPath.
     ///
     /// - Parameters:
-    ///   - indexPath: Target IndexPath to scroll to
-    ///   - scrollPosition: Scroll position
-    ///   - animated: Whether to animate or not
+    ///   - indexPath: Target IndexPath to scroll to.
+    ///   - scrollPosition: Scroll position.
+    ///   - animated: Whether to animate or not.
     func safeScrollToItem(at indexPath: IndexPath, at scrollPosition: UICollectionView.ScrollPosition, animated: Bool) {
         guard indexPath.item >= 0,
-            indexPath.section >= 0,
-            indexPath.section < numberOfSections,
-            indexPath.item < numberOfItems(inSection: indexPath.section) else {
+              indexPath.section >= 0,
+              indexPath.section < numberOfSections,
+              indexPath.item < numberOfItems(inSection: indexPath.section) else {
             return
         }
         scrollToItem(at: indexPath, at: scrollPosition, animated: animated)
     }
 
-    /// SwifterSwift: Check whether IndexPath is valid within the CollectionView
+    /// SwifterSwift: Check whether IndexPath is valid within the CollectionView.
     ///
-    /// - Parameter indexPath: An IndexPath to check
-    /// - Returns: Boolean value for valid or invalid IndexPath
+    /// - Parameter indexPath: An IndexPath to check.
+    /// - Returns: Boolean value for valid or invalid IndexPath.
     func isValidIndexPath(_ indexPath: IndexPath) -> Bool {
         return indexPath.section >= 0 &&
             indexPath.item >= 0 &&

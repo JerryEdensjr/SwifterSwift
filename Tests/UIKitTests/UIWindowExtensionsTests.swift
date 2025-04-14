@@ -1,4 +1,4 @@
-// UIWindowExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UIWindowExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,6 +6,7 @@ import XCTest
 #if canImport(UIKit) && os(iOS)
 import UIKit
 
+@MainActor
 final class UIWindowExtensionsTests: XCTestCase {
     func testSwitchRootViewController() {
         let viewController = UIViewController()

@@ -1,4 +1,4 @@
-// OptionalExtensions.swift - Copyright 2020 SwifterSwift
+// OptionalExtensions.swift - Copyright 2025 SwifterSwift
 
 // MARK: - Methods
 
@@ -27,24 +27,24 @@ public extension Optional {
     ///        try print(bar.unwrapped(or: MyError.notFound)) -> "bar"
     ///
     /// - Parameter error: The error to throw if the optional is `nil`.
-    /// - Returns: The value wrapped by the optional.
     /// - Throws: The error passed in.
-    func unwrapped(or error: Error) throws -> Wrapped {
+    /// - Returns: The value wrapped by the optional.
+    func unwrapped(or error: any Error) throws -> Wrapped {
         guard let wrapped = self else { throw error }
         return wrapped
     }
 
-    /// SwifterSwift: Runs a block to Wrapped if not nil
+    /// SwifterSwift: Runs a block to Wrapped if not nil.
     ///
     ///		let foo: String? = nil
     ///		foo.run { unwrappedFoo in
-    ///			// block will never run sice foo is nill
+    ///			// block will never run since foo is nil
     ///			print(unwrappedFoo)
     ///		}
     ///
     ///		let bar: String? = "bar"
     ///		bar.run { unwrappedBar in
-    ///			// block will run sice bar is not nill
+    ///			// block will run since bar is not nil
     ///			print(unwrappedBar) -> "bar"
     ///		}
     ///
@@ -64,7 +64,7 @@ public extension Optional {
     ///   - lhs: Any?
     ///   - rhs: Any?
     static func ??= (lhs: inout Optional, rhs: Optional) {
-        guard let rhs = rhs else { return }
+        guard let rhs else { return }
         lhs = rhs
     }
 
@@ -91,15 +91,12 @@ public extension Optional {
 public extension Optional where Wrapped: Collection {
     /// SwifterSwift: Check if optional is nil or empty collection.
     var isNilOrEmpty: Bool {
-        guard let collection = self else { return true }
-        return collection.isEmpty
+        return self?.isEmpty ?? true
     }
 
-    /// SwifterSwift: Returns the collection only if it is not nill and not empty.
+    /// SwifterSwift: Returns the collection only if it is not nil and not empty.
     var nonEmpty: Wrapped? {
-        guard let collection = self else { return nil }
-        guard !collection.isEmpty else { return nil }
-        return collection
+        return (self?.isEmpty ?? true) ? nil : self
     }
 }
 

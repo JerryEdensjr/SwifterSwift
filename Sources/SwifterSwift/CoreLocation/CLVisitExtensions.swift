@@ -1,4 +1,4 @@
-// CLVisitExtensions.swift - Copyright 2020 SwifterSwift
+// CLVisitExtensions.swift - Copyright 2025 SwifterSwift
 
 #if canImport(CoreLocation) && (os(iOS) || targetEnvironment(macCatalyst))
 import CoreLocation
@@ -8,7 +8,7 @@ import CoreLocation
 public extension CLVisit {
     /// SwifterSwift: Retrieves a visit's location.
     ///
-    /// - Returns: CLLocation
+    /// - Returns: CLLocation.
     var location: CLLocation {
         return CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
     }

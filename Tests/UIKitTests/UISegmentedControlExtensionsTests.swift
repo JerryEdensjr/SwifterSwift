@@ -1,4 +1,4 @@
-// UISegmentedControlExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UISegmentedControlExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,6 +6,7 @@ import XCTest
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
 
+@MainActor
 final class UISegmentedControlExtensionsTests: XCTestCase {
     func testSegmentTitles() {
         let segmentControl = UISegmentedControl()

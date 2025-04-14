@@ -1,12 +1,19 @@
-// CollectionExtensions.swift - Copyright 2020 SwifterSwift
+// CollectionExtensions.swift - Copyright 2025 SwifterSwift
 
 #if canImport(Dispatch)
 import Dispatch
 #endif
 
-// MARK: - Methods
+// MARK: - Properties
 
 public extension Collection {
+    /// SwifterSwift: The full range of the collection.
+    var fullRange: Range<Index> { startIndex..<endIndex }
+}
+
+// MARK: - Methods
+
+public extension Collection where Self: Sendable {
     #if canImport(Dispatch)
     /// SwifterSwift: Performs `each` closure for each element of collection in parallel.
     ///
@@ -15,13 +22,15 @@ public extension Collection {
     ///        }
     ///
     /// - Parameter each: closure to run for each element.
-    func forEachInParallel(_ each: (Self.Element) -> Void) {
+    func forEachInParallel(_ each: @Sendable (Self.Element) -> Void) {
         DispatchQueue.concurrentPerform(iterations: count) {
             each(self[index(startIndex, offsetBy: $0)])
         }
     }
     #endif
+}
 
+public extension Collection {
     /// SwifterSwift: Safe protects the array from out of bounds by use of optional.
     ///
     ///        let arr = [1, 2, 3, 4, 5]
@@ -33,7 +42,8 @@ public extension Collection {
         return indices.contains(index) ? self[index] : nil
     }
 
-    /// SwifterSwift: Returns an array of slices of length "size" from the array. If array can't be split evenly, the final slice will be the remaining elements.
+    /// SwifterSwift: Returns an array of slices of length "size" from the array. If array can't be split evenly, the
+    /// final slice will be the remaining elements.
     ///
     ///     [0, 2, 4, 7].group(by: 2) -> [[0, 2], [4, 7]]
     ///     [0, 2, 4, 7, 6].group(by: 2) -> [[0, 2], [4, 7], [6]]
@@ -53,16 +63,18 @@ public extension Collection {
         return slices
     }
 
+    #if !os(Linux) && !os(Android)
     /// SwifterSwift: Get all indices where condition is met.
     ///
     ///     [1, 7, 1, 2, 4, 1, 8].indices(where: { $0 == 1 }) -> [0, 2, 5]
     ///
     /// - Parameter condition: condition to evaluate each element against.
-    /// - Returns: all indices where the specified condition evaluates to true. (optional)
+    /// - Returns: all indices where the specified condition evaluates to true (optional).
     func indices(where condition: (Element) throws -> Bool) rethrows -> [Index]? {
-        let indices = try self.indices.filter { try condition(self[$0]) }
+        let indices = try indices.filter { try condition(self[$0]) }
         return indices.isEmpty ? nil : indices
     }
+    #endif
 
     /// SwifterSwift: Calls the given closure with an array of size of the parameter slice.
     ///
@@ -75,9 +87,42 @@ public extension Collection {
     func forEach(slice: Int, body: ([Element]) throws -> Void) rethrows {
         var start = startIndex
         while case let end = index(start, offsetBy: slice, limitedBy: endIndex) ?? endIndex,
-            start != end {
+              start != end {
             try body(Array(self[start..<end]))
             start = end
+        }
+    }
+
+    /// SwifterSwift: Unique pair of elements in a collection.
+    ///
+    ///        let array = [1, 2, 3]
+    ///        for (first, second) in array.adjacentPairs() {
+    ///            print(first, second) // print: (1, 2) (1, 3) (2, 3)
+    ///        }
+    ///
+    ///
+    /// - Returns: a sequence of adjacent pairs of elements from this collection.
+    func adjacentPairs() -> AnySequence<(Element, Element)> {
+        guard var index1 = index(startIndex, offsetBy: 0, limitedBy: endIndex),
+              var index2 = index(index1, offsetBy: 1, limitedBy: endIndex) else {
+            return AnySequence {
+                EmptyCollection.Iterator()
+            }
+        }
+        return AnySequence {
+            AnyIterator {
+                if index1 >= endIndex || index2 >= endIndex {
+                    return nil
+                }
+                defer {
+                    index2 = self.index(after: index2)
+                    if index2 >= endIndex {
+                        index1 = self.index(after: index1)
+                        index2 = self.index(after: index1)
+                    }
+                }
+                return (self[index1], self[index2])
+            }
         }
     }
 }

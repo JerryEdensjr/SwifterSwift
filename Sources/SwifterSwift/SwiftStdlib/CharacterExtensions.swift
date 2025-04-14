@@ -1,4 +1,4 @@
-// CharacterExtensions.swift - Copyright 2020 SwifterSwift
+// CharacterExtensions.swift - Copyright 2025 SwifterSwift
 
 // MARK: - Properties
 

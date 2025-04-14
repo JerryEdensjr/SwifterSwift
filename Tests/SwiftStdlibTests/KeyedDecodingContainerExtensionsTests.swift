@@ -1,4 +1,4 @@
-// KeyedDecodingContainerExtensionsTests.swift - Copyright 2020 SwifterSwift
+// KeyedDecodingContainerExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 import XCTest
 
@@ -13,7 +13,7 @@ private struct Video: Decodable {
         case isFullScreen
     }
 
-    init(from decoder: Decoder) throws {
+    init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         isPlaying = try container.decodeBoolAsIntOrString(forKey: .isPlaying)
         isFullScreen = try container.decodeBoolAsIntOrStringIfPresent(forKey: .isFullScreen)

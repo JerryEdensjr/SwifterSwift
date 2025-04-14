@@ -1,4 +1,4 @@
-// SignedNumericExtensionsTests.swift - Copyright 2020 SwifterSwift
+// SignedNumericExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -13,8 +13,10 @@ final class SignedNumericExtensionsTests: XCTestCase {
     }
 
     func testAsLocaleCurrency() {
-        let number1: Double = 3.2
-        XCTAssertEqual(number1.asLocaleCurrency, "$3.20")
+        #if !os(Linux) && !os(Android)
+        let number1 = 3.2
+        XCTAssertEqual(number1.asLocaleCurrency, "$3.20", "Failed to format number with locale \(Locale.current)")
+        #endif
 
         let number2 = Double(10.23)
         if let symbol = Locale.current.currencySymbol {

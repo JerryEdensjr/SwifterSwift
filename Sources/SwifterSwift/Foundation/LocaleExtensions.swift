@@ -1,4 +1,4 @@
-// LocaleExtensions.swift - Copyright 2020 SwifterSwift
+// LocaleExtensions.swift - Copyright 2025 SwifterSwift
 
 #if canImport(Foundation)
 import Foundation
@@ -29,10 +29,13 @@ public extension Locale {
     /// - Parameter isoRegionCode: The IOS region code.
     ///
     /// Adapted from https://stackoverflow.com/a/30403199/1627511
+    /// - Returns: A flag emoji string for the given region code (optional).
     static func flagEmoji(forRegionCode isoRegionCode: String) -> String? {
-        #if !os(Linux)
-        guard isoRegionCodes.contains(isoRegionCode) else { return nil }
-        #endif
+        if #available(macOS 13, iOS 16, tvOS 16, watchOS 9, *) {
+            guard Locale.Region.isoRegions.contains(where: { $0.identifier == isoRegionCode }) else { return nil }
+        } else {
+            guard isoRegionCodes.contains(isoRegionCode) else { return nil }
+        }
 
         return isoRegionCode.unicodeScalars.reduce(into: String()) {
             guard let flagScalar = UnicodeScalar(UInt32(127_397) + $1.value) else { return }

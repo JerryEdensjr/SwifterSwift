@@ -1,8 +1,4 @@
-// FloatingPointExtensions.swift - Copyright 2020 SwifterSwift
-
-#if canImport(Foundation)
-import Foundation
-#endif
+// FloatingPointExtensions.swift - Copyright 2025 SwifterSwift
 
 // MARK: - Properties
 
@@ -22,24 +18,20 @@ public extension FloatingPoint {
         return self < 0
     }
 
-    #if canImport(Foundation)
     /// SwifterSwift: Ceil of number.
     var ceil: Self {
-        return Foundation.ceil(self)
+        return rounded(.up)
     }
-    #endif
+
+    /// SwifterSwift: Floor of number.
+    var floor: Self {
+        return rounded(.down)
+    }
 
     /// SwifterSwift: Radian value of degree input.
     var degreesToRadians: Self {
         return Self.pi * self / Self(180)
     }
-
-    #if canImport(Foundation)
-    /// SwifterSwift: Floor of number.
-    var floor: Self {
-        return Foundation.floor(self)
-    }
-    #endif
 
     /// SwifterSwift: Degree value of radian input.
     var radiansToDegrees: Self {
@@ -54,10 +46,10 @@ infix operator ±
 /// SwifterSwift: Tuple of plus-minus operation.
 ///
 /// - Parameters:
-///   - lhs: number
-///   - rhs: number
+///   - lhs: number.
+///   - rhs: number.
 /// - Returns: tuple of plus-minus operation ( 2.5 ± 1.5 -> (4, 1)).
-func ± <T: FloatingPoint>(lhs: T, rhs: T) -> (T, T) {
+public func ± <T: FloatingPoint>(lhs: T, rhs: T) -> (T, T) {
     // http://nshipster.com/swift-operators/
     return (lhs + rhs, lhs - rhs)
 }
@@ -68,7 +60,7 @@ func ± <T: FloatingPoint>(lhs: T, rhs: T) -> (T, T) {
 prefix operator ±
 /// SwifterSwift: Tuple of plus-minus operation.
 ///
-/// - Parameter int: number
+/// - Parameter int: number.
 /// - Returns: tuple of plus-minus operation (± 2.5 -> (2.5, -2.5)).
 public prefix func ± <T: FloatingPoint>(number: T) -> (T, T) {
     // http://nshipster.com/swift-operators/
@@ -81,11 +73,11 @@ public prefix func ± <T: FloatingPoint>(number: T) -> (T, T) {
 prefix operator √
 /// SwifterSwift: Square root of float.
 ///
-/// - Parameter float: float value to find square root for
+/// - Parameter float: float value to find square root for.
 /// - Returns: square root of given float.
 public prefix func √ <T>(float: T) -> T where T: FloatingPoint {
     // http://nshipster.com/swift-operators/
-    return sqrt(float)
+    return float.squareRoot()
 }
 
 // swiftlint:enable identifier_name

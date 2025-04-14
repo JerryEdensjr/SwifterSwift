@@ -1,4 +1,4 @@
-// DateExtensionsTests.swift - Copyright 2020 SwifterSwift
+// DateExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -59,7 +59,7 @@ final class DateExtensionsTests: XCTestCase {
     }
 
     func testQuarter() {
-        #if !os(Linux)
+        #if !os(Linux) && !os(Android)
         let date1 = Date(timeIntervalSince1970: 0)
         XCTAssertEqual(date1.quarter, 1)
 
@@ -398,8 +398,11 @@ final class DateExtensionsTests: XCTestCase {
         let date3 = date.adding(.minute, value: 7) // adding 7 minutes
         XCTAssertEqual(date3.nearestFiveMinutes, date3.adding(.minute, value: -2))
 
-        let date4 = date.adding(.hour, value: 1).adding(.minute, value: 2) // adding 1 hour and 2 minutes
-        XCTAssertEqual(date4.nearestFiveMinutes, date.adding(.hour, value: 1))
+        let date4 = date.adding(.minute, value: 2)
+        XCTAssertEqual(date4.nearestFiveMinutes, date)
+
+        let date5 = date.adding(.minute, value: 3)
+        XCTAssertEqual(date5.nearestFiveMinutes, date.adding(.minute, value: 5))
     }
 
     func testNearestTenMinutes() {
@@ -414,6 +417,9 @@ final class DateExtensionsTests: XCTestCase {
 
         let date4 = date.adding(.hour, value: 1).adding(.minute, value: 2) // adding 1 hour and 2 minutes
         XCTAssertEqual(date4.nearestTenMinutes, date.adding(.hour, value: 1))
+
+        let date5 = date.adding(.minute, value: 5) // adding 5 minutes
+        XCTAssertEqual(date5.nearestTenMinutes, date.adding(.minute, value: 10))
     }
 
     func testNearestQuarterHour() {
@@ -428,6 +434,12 @@ final class DateExtensionsTests: XCTestCase {
 
         let date4 = date.adding(.hour, value: 1).adding(.minute, value: 2) // adding 1 hour and 2 minutes
         XCTAssertEqual(date4.nearestQuarterHour, date.adding(.hour, value: 1))
+
+        let date5 = date.adding(.minute, value: 8) // adding 8 minutes
+        XCTAssertEqual(date5.nearestQuarterHour, date.adding(.minute, value: 15))
+
+        let date6 = date.adding(.minute, value: 7) // adding 7 minutes
+        XCTAssertEqual(date6.nearestQuarterHour, date)
     }
 
     func testNearestHalfHour() {
@@ -442,6 +454,9 @@ final class DateExtensionsTests: XCTestCase {
 
         let date4 = date.adding(.hour, value: 1).adding(.minute, value: 2) // adding 1 hour and 2 minutes
         XCTAssertEqual(date4.nearestHalfHour, date.adding(.hour, value: 1))
+
+        let date5 = date.adding(.minute, value: 15) // adding 15 minutes
+        XCTAssertEqual(date5.nearestHalfHour, date.adding(.minute, value: 30))
     }
 
     func testNearestHour() {
@@ -453,6 +468,9 @@ final class DateExtensionsTests: XCTestCase {
 
         let date3 = date.adding(.minute, value: 34) // adding 34 minutes
         XCTAssertEqual(date3.nearestHour, date.adding(.hour, value: 1))
+
+        let date4 = date.adding(.minute, value: 30) // adding 30 minutes
+        XCTAssertEqual(date4.nearestHour, date.adding(.hour, value: 1))
     }
 
     func testUnixTimestamp() {
@@ -507,7 +525,6 @@ final class DateExtensionsTests: XCTestCase {
         XCTAssertEqual(date8.adding(.year, value: -4), date)
     }
 
-    // swiftlint:disable:next function_body_length
     func testAdd() {
         var date = Date(timeIntervalSince1970: 0)
 
@@ -610,7 +627,7 @@ final class DateExtensionsTests: XCTestCase {
     }
 
     func testBeginning() {
-        #if !os(Linux)
+        #if !os(Linux) && !os(Android)
         let date = Date()
 
         XCTAssertNotNil(date.beginning(of: .second))
@@ -657,7 +674,7 @@ final class DateExtensionsTests: XCTestCase {
         XCTAssertEqual(date.end(of: .day)?.minute, 59)
         XCTAssertEqual(date.end(of: .day)?.second, 59)
 
-        #if !os(Linux)
+        #if !os(Linux) && !os(Android)
         var endOfWeek = date.beginning(of: .weekOfYear)
         endOfWeek?.add(.day, value: 7)
         endOfWeek?.add(.second, value: -1)
@@ -856,7 +873,7 @@ final class DateExtensionsTests: XCTestCase {
         XCTAssertFalse(Date().isWithin(1, .calendar, of: Date()))
     }
 
-    func testNewDateFromComponenets() {
+    func testNewDateFromComponents() {
         let date = Date(
             calendar: Date().calendar,
             timeZone: NSTimeZone.default,
@@ -905,7 +922,7 @@ final class DateExtensionsTests: XCTestCase {
 
         XCTAssertNotNil(date)
 
-        if let date = date {
+        if let date {
             XCTAssertEqual(String(describing: date), "2017-12-25 00:00:00 +0000")
         }
 

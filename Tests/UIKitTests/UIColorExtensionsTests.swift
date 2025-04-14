@@ -1,4 +1,4 @@
-// UIColorExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UIColorExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,6 +6,7 @@ import XCTest
 #if canImport(UIKit)
 import UIKit
 
+@MainActor
 final class UIColorExtensionsTests: XCTestCase {
     #if !os(watchOS)
     func testInitLightDark() {

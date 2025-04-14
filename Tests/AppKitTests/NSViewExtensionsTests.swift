@@ -1,10 +1,11 @@
-// NSViewExtensionsTests.swift - Copyright 2020 SwifterSwift
+// NSViewExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 #if os(macOS)
 
 @testable import SwifterSwift
 import XCTest
 
+@MainActor
 final class NSViewExtensionsTests: XCTestCase {
     func testBorderColor() {
         let frame = CGRect(x: 0, y: 0, width: 100, height: 100)

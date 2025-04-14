@@ -1,11 +1,12 @@
-// StringExtensionsTests.swift - Copyright 2020 SwifterSwift
+// StringExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
 
 // swiftlint:disable:next type_body_length
 final class StringExtensionsTests: XCTestCase {
-    var helloWorld = "Hello World!"
+    let helloWorld = "Hello World!"
+    let flower = "💐" // for testing multi-byte characters
 
     override func setUp() {
         super.setUp()
@@ -15,6 +16,8 @@ final class StringExtensionsTests: XCTestCase {
     func testBase64Decoded() {
         XCTAssertEqual("SGVsbG8gV29ybGQh".base64Decoded, helloWorld)
         XCTAssertEqual("http://example.com/xxx", "aHR0cDovL2V4YW1wbGUuY29tL3h4eA".base64Decoded)
+        XCTAssertEqual(helloWorld, "SGVsbG\n8gV29ybGQh".base64Decoded)
+        XCTAssertEqual(helloWorld, "SGVsbG8gV29ybGQh\n".base64Decoded)
         XCTAssertNil(helloWorld.base64Decoded)
     }
 
@@ -220,7 +223,16 @@ final class StringExtensionsTests: XCTestCase {
     }
 
     func testUrl() {
-        XCTAssertNil("hello world".url)
+        let helloWorld = "hello world".url
+        #if os(Linux) || os(Android)
+        XCTAssertEqual(helloWorld, URL(string: "hello%20world"))
+        #else
+        if #available(iOS 17.0, *) {
+            XCTAssertEqual(helloWorld, URL(string: "hello%20world"))
+        } else {
+            XCTAssertNil(helloWorld)
+        }
+        #endif
 
         let google = "https://www.google.com"
         XCTAssertEqual(google.url, URL(string: google))
@@ -265,7 +277,7 @@ final class StringExtensionsTests: XCTestCase {
         XCTAssertNotNil("8.23".float(locale: Locale(identifier: "en_US_POSIX")))
         XCTAssertEqual("8.23".float(locale: Locale(identifier: "en_US_POSIX")), Float(8.23))
 
-        #if os(Linux)
+        #if os(Linux) || os(Android)
         XCTAssertEqual("8s".float(), 8)
         #else
         XCTAssertNil("8s".float())
@@ -279,7 +291,7 @@ final class StringExtensionsTests: XCTestCase {
         XCTAssertNotNil("8.23".double(locale: Locale(identifier: "en_US_POSIX")))
         XCTAssertEqual("8.23".double(locale: Locale(identifier: "en_US_POSIX")), 8.23)
 
-        #if os(Linux)
+        #if os(Linux) || os(Android)
         XCTAssertEqual("8s".double(), 8)
         #else
         XCTAssertNil("8s".double())
@@ -287,7 +299,7 @@ final class StringExtensionsTests: XCTestCase {
     }
 
     func testCgFloat() {
-        #if !os(Linux)
+        #if !os(Linux) && !os(Android)
         XCTAssertNotNil("8".cgFloat())
         XCTAssertEqual("8".cgFloat(), 8)
 
@@ -299,7 +311,7 @@ final class StringExtensionsTests: XCTestCase {
     }
 
     func testLines() {
-        #if !os(Linux)
+        #if !os(Linux) && !os(Android)
         XCTAssertEqual("Hello\ntest".lines(), ["Hello", "test"])
         #endif
     }
@@ -307,6 +319,11 @@ final class StringExtensionsTests: XCTestCase {
     func testLocalized() {
         XCTAssertEqual(helloWorld.localized(), NSLocalizedString(helloWorld, comment: ""))
         XCTAssertEqual(helloWorld.localized(comment: "comment"), NSLocalizedString(helloWorld, comment: "comment"))
+    }
+
+    func testFormatLocalized() {
+        XCTAssertEqual("%d Swift %d Objective-C".formatLocalized(1, 2), "1 Swift 2 Objective-C")
+        XCTAssertEqual("%d Swift %d Objective-C".formatLocalized(comment: "comment", 1, 2), "1 Swift 2 Objective-C")
     }
 
     func testMostCommonCharacter() {
@@ -334,6 +351,7 @@ final class StringExtensionsTests: XCTestCase {
         XCTAssertEqual("Swift is amazing".toSlug(), "swift-is-amazing")
     }
 
+    // swiftlint:disable:next function_body_length
     func testSubscript() {
         let str = "Hello world!"
         XCTAssertEqual(str[safe: 1], "e")
@@ -356,6 +374,24 @@ final class StringExtensionsTests: XCTestCase {
         XCTAssertNil(str[safe: 10...18])
         XCTAssertEqual(str[safe: 11...11], "!")
         XCTAssertNil(str[safe: 11...12])
+
+        XCTAssertNil(str[safe: ...(-1)])
+        XCTAssertEqual(str[safe: ...0], "H")
+        XCTAssertEqual(str[safe: ...4], "Hello")
+        XCTAssertEqual(str[safe: ...11], "Hello world!")
+        XCTAssertNil(str[safe: ...12])
+
+        XCTAssertNil(str[safe: ..<(-1)])
+        XCTAssertEqual(str[safe: ..<0], "")
+        XCTAssertEqual(str[safe: ..<5], "Hello")
+        XCTAssertEqual(str[safe: ..<12], "Hello world!")
+        XCTAssertNil(str[safe: ..<13])
+
+        XCTAssertNil(str[safe: (-1)...])
+        XCTAssertEqual(str[safe: 0...], "Hello world!")
+        XCTAssertEqual(str[safe: 6...], "world!")
+        XCTAssertEqual(str[safe: 11...], "!")
+        XCTAssertNil(str[safe: 12...])
 
         let oneCharStr = "a"
         XCTAssertEqual(oneCharStr[safe: 0..<0], "")
@@ -388,8 +424,9 @@ final class StringExtensionsTests: XCTestCase {
         let str = "Hello world!"
         #if os(iOS)
         str.copyToPasteboard()
-        let strFromPasteboard = UIPasteboard.general.string
-        XCTAssertEqual(strFromPasteboard, str)
+        // Fail because new os requires user accept paste.
+        // let strFromPasteboard = UIPasteboard.general.string
+        // XCTAssertEqual(strFromPasteboard, str)
 
         #elseif os(macOS)
         str.copyToPasteboard()
@@ -565,28 +602,54 @@ final class StringExtensionsTests: XCTestCase {
         XCTAssertEqual(url, "it's%20easy%20to%20encode%20strings")
     }
 
-    func testMatches() {
-        XCTAssert("123".matches(pattern: "\\d{3}"))
+    let emailPattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+
+    func testPatternMatches() {
+        XCTAssertTrue("123".matches(pattern: "\\d{3}"))
         XCTAssertFalse("dasda".matches(pattern: "\\d{3}"))
-        XCTAssertFalse("notanemail.com".matches(pattern: "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"))
-        XCTAssert("email@mail.com".matches(pattern: "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"))
+        XCTAssertFalse("notanemail.com".matches(pattern: emailPattern))
+        XCTAssertTrue("email@mail.com".matches(pattern: emailPattern))
+    }
+
+    func testRegexMatches() throws {
+        XCTAssertTrue(try "123".matches(regex: NSRegularExpression(pattern: "\\d{3}")))
+        XCTAssertFalse(try "dasda".matches(regex: NSRegularExpression(pattern: "\\d{3}")))
+        XCTAssertFalse(try "notanemail.com".matches(regex: NSRegularExpression(pattern: emailPattern)))
+        XCTAssertTrue(try "email@mail.com".matches(regex: NSRegularExpression(pattern: emailPattern)))
     }
 
     #if canImport(Foundation)
-    func testRegexMatchOperator() {
-        XCTAssert("123" ~= "\\d{3}")
-        XCTAssertFalse("dasda" ~= "\\d{3}")
-        XCTAssertFalse("notanemail.com" ~= "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}")
-        XCTAssert("email@mail.com" ~= "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}")
-        XCTAssert("hat" ~= "[a-z]at")
-        XCTAssertFalse("" ~= "[a-z]at")
-        XCTAssert("" ~= "[a-z]*")
-        XCTAssertFalse("" ~= "[0-9]+")
+    func testPatternMatchOperator() {
+        XCTAssert("\\d{3}" ~= "123")
+        XCTAssertFalse("\\d{3}" ~= "dasda")
+        XCTAssertFalse(emailPattern ~= "notanemail.com")
+        XCTAssert(emailPattern ~= "email@mail.com")
+        XCTAssert("[a-z]at" ~= "hat")
+        XCTAssertFalse("[a-z]at" ~= "")
+        XCTAssert("[a-z]*" ~= "")
+        XCTAssertFalse("[0-9]+" ~= "")
+
+        // https://github.com/SwifterSwift/SwifterSwift/issues/1109
+        let codeString = "0"
+        switch codeString {
+        case "101":
+            XCTAssert(codeString == "101")
+        case "0":
+            XCTAssert(codeString == "0")
+        default:
+            XCTFail("Switch string value, not matching the correct result.")
+        }
     }
     #endif
 
+    func testRegexMatchOperator() throws {
+        let regex = try NSRegularExpression(pattern: "\\d{3}")
+        XCTAssert(regex ~= "123")
+        XCTAssertFalse(regex ~= "abc")
+    }
+
     func testPadStart() {
-        var str: String = "str"
+        var str = "str"
         str.padStart(10)
         XCTAssertEqual(str, "       str")
 
@@ -621,7 +684,7 @@ final class StringExtensionsTests: XCTestCase {
     }
 
     func testPadEnd() {
-        var str: String = "str"
+        var str = "str"
         str.padEnd(10)
         XCTAssertEqual(str, "str       ")
 
@@ -655,6 +718,8 @@ final class StringExtensionsTests: XCTestCase {
         XCTAssertEqual("str".paddingEnd(2), "str")
     }
 
+    #if !os(Android)
+    @MainActor
     func testIsSpelledCorrectly() {
         #if os(iOS) || os(tvOS)
         let strCorrect = "Hello, World!"
@@ -665,6 +730,7 @@ final class StringExtensionsTests: XCTestCase {
         XCTAssertFalse(strNonCorrect.isSpelledCorrectly)
         #endif
     }
+    #endif
 
     func testRemovingPrefix() {
         let inputStr = "Hello, World!"
@@ -685,18 +751,6 @@ final class StringExtensionsTests: XCTestCase {
         XCTAssertNotNil(String(base64: "SGVsbG8gV29ybGQh"))
         XCTAssertEqual(String(base64: "SGVsbG8gV29ybGQh"), "Hello World!")
         XCTAssertNil(String(base64: "hello"))
-    }
-
-    func testInitRandomOfLength() {
-        let str1 = String(randomOfLength: 10)
-        XCTAssertEqual(str1.count, 10)
-
-        let str2 = String(randomOfLength: 10)
-        XCTAssertEqual(str2.count, 10)
-
-        XCTAssertNotEqual(str1, str2)
-
-        XCTAssertEqual(String(randomOfLength: 0), "")
     }
 
     func testBold() {
@@ -725,7 +779,7 @@ final class StringExtensionsTests: XCTestCase {
     }
 
     func testUnderline() {
-        #if !os(Linux)
+        #if !os(Linux) && !os(Android)
         let underlinedString = "hello".underline
         let attrs = underlinedString.attributes(
             at: 0,
@@ -741,7 +795,7 @@ final class StringExtensionsTests: XCTestCase {
     }
 
     func testStrikethrough() {
-        #if !os(Linux)
+        #if !os(Linux) && !os(Android)
         let strikedthroughString = "hello".strikethrough
         let attrs = strikedthroughString.attributes(
             at: 0,
@@ -781,7 +835,7 @@ final class StringExtensionsTests: XCTestCase {
             in: NSRange(location: 0, length: coloredString.length))
         XCTAssertNotNil(attrs[NSAttributedString.Key.foregroundColor])
 
-        guard let color = attrs[.foregroundColor] as? Color else {
+        guard let color = attrs[.foregroundColor] as? SFColor else {
             XCTFail("Unable to find color in testColored")
             return
         }
@@ -791,6 +845,12 @@ final class StringExtensionsTests: XCTestCase {
 
     func testNSString() {
         XCTAssertEqual("Hello".nsString, NSString(string: "Hello"))
+    }
+
+    func testFullNSRange() {
+        XCTAssertEqual("".fullNSRange, NSRange(location: 0, length: 0))
+        XCTAssertEqual(helloWorld.fullNSRange, NSRange(location: 0, length: 12))
+        XCTAssertEqual(flower.fullNSRange, NSRange(location: 0, length: 2))
     }
 
     func testLastPathComponent() {
@@ -821,6 +881,34 @@ final class StringExtensionsTests: XCTestCase {
         let string = "hello"
         let nsString = NSString(string: "hello")
         XCTAssertEqual(string.pathComponents, nsString.pathComponents)
+    }
+
+    func testRange() {
+        let fullRange = helloWorld.range(from: NSRange(location: 0, length: 12))
+        XCTAssertEqual(String(helloWorld[fullRange]), helloWorld)
+
+        let range = helloWorld.range(from: NSRange(location: 6, length: 6))
+        XCTAssertEqual(helloWorld[range], "World!")
+
+        let emptyRange = helloWorld.range(from: NSRange(location: 0, length: 0))
+        XCTAssertEqual(helloWorld[emptyRange], "")
+
+        let flowerRange = flower.range(from: NSRange(location: 0, length: 2))
+        XCTAssertEqual(String(flower[flowerRange]), flower)
+    }
+
+    func testNSRange() {
+        let startIndex = helloWorld.startIndex
+        let endIndex = helloWorld.endIndex
+        XCTAssertEqual(helloWorld.nsRange(from: startIndex..<endIndex), NSRange(location: 0, length: 12))
+
+        XCTAssertEqual(
+            helloWorld.nsRange(from: helloWorld.index(startIndex, offsetBy: 6)..<endIndex),
+            NSRange(location: 6, length: 6))
+
+        XCTAssertEqual(helloWorld.nsRange(from: startIndex..<startIndex), NSRange(location: 0, length: 0))
+
+        XCTAssertEqual(flower.nsRange(from: flower.startIndex..<flower.endIndex), NSRange(location: 0, length: 2))
     }
 
     func testAppendingPathComponent() {
@@ -854,10 +942,38 @@ final class StringExtensionsTests: XCTestCase {
         XCTAssertEqual(num.spelledOutString(locale: Locale(identifier: "en_US")), "twelve point three two")
     }
 
-    @available(macOS 10.11, *)
     func testIntOrdinal() {
         let num = 12
         XCTAssertNotNil(num.ordinalString())
         XCTAssertEqual(num.ordinalString(), "12th")
+    }
+
+    func testReplacingOccurrencesRegex() throws {
+        let re1 = try NSRegularExpression(pattern: "empty")
+        XCTAssertEqual("", "".replacingOccurrences(of: re1, with: "case"))
+
+        let string = "hello"
+
+        let re2 = try NSRegularExpression(pattern: "not")
+        XCTAssertEqual("hello", string.replacingOccurrences(of: re2, with: "found"))
+        let re3 = try NSRegularExpression(pattern: "l+")
+        XCTAssertEqual("hexo", string.replacingOccurrences(of: re3, with: "x"))
+        let re4 = try NSRegularExpression(pattern: "(ll)")
+        XCTAssertEqual("hellxo", string.replacingOccurrences(of: re4, with: "$1x"))
+
+        let re5 = try NSRegularExpression(pattern: "ell")
+        let options: NSRegularExpression.MatchingOptions = [.anchored]
+        XCTAssertEqual("hello", string.replacingOccurrences(of: re5, with: "not found", options: options))
+
+        let re6 = try NSRegularExpression(pattern: "l")
+        let range = string.startIndex..<string.index(string.startIndex, offsetBy: 3)
+        XCTAssertEqual("hexlo", string.replacingOccurrences(of: re6, with: "x", range: range))
+    }
+
+    func testNSRangeSubscript() {
+        XCTAssertEqual(helloWorld[NSRange(location: 0, length: 0)], "")
+        XCTAssertEqual(String(helloWorld[NSRange(location: 0, length: 12)]), helloWorld)
+        XCTAssertEqual(String(helloWorld[NSRange(location: 6, length: 6)]), "World!")
+        XCTAssertEqual(String(flower[NSRange(location: 0, length: 2)]), flower)
     }
 }

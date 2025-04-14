@@ -1,4 +1,4 @@
-// UILabelExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UILabelExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,6 +6,7 @@ import XCTest
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
 
+@MainActor
 final class UILabelExtensionsTests: XCTestCase {
     func testInitWithText() {
         let label = UILabel(text: "Hello world")

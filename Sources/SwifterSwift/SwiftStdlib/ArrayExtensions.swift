@@ -1,4 +1,23 @@
-// ArrayExtensions.swift - Copyright 2020 SwifterSwift
+// ArrayExtensions.swift - Copyright 2025 SwifterSwift
+
+// MARK: - Initializers
+
+public extension Array {
+    /// SwifterSwift: Creates an array with specified number of elements, for each element it calls specified closure.
+    /// - Parameters:
+    ///   - count: The number of elements in the new array.
+    ///   - element: A closure that initializes each element.
+    ///     - Parameter *index*: An index of initialized element in the array.
+    ///     - Returns: element of the array.
+    init(count: Int, element: (Int) throws -> Element) rethrows {
+        try self.init(unsafeUninitializedCapacity: count) { buffer, initializedCount in
+            for index in 0..<count {
+                try buffer.baseAddress?.advanced(by: index).initialize(to: element(index))
+                initializedCount += 1
+            }
+        }
+    }
+}
 
 // MARK: - Methods
 
@@ -28,17 +47,18 @@ public extension Array {
         swapAt(index, otherIndex)
     }
 
-    /// SwifterSwift: Sort an array like another array based on a key path. If the other array doesn't contain a certain value, it will be sorted last.
+    /// SwifterSwift: Sort an array like another array based on a key path. If the other array doesn't contain a certain
+    /// value, it will be sorted last.
     ///
     ///        [MyStruct(x: 3), MyStruct(x: 1), MyStruct(x: 2)].sorted(like: [1, 2, 3], keyPath: \.x)
     ///            -> [MyStruct(x: 1), MyStruct(x: 2), MyStruct(x: 3)]
     ///
     /// - Parameters:
     ///   - otherArray: array containing elements in the desired order.
-    ///   - keyPath: keyPath indiciating the property that the array should be sorted by
+    ///   - keyPath: keyPath indicating the property that the array should be sorted by
     /// - Returns: sorted array.
     func sorted<T: Hashable>(like otherArray: [T], keyPath: KeyPath<Element, T>) -> [Element] {
-        let dict = otherArray.enumerated().reduce(into: [:]) { $0[$1.element] = $1.offset }
+        let dict = Dictionary(uniqueKeysWithValues: otherArray.enumerated().map { ($1, $0) })
         return sorted {
             guard let thisIndex = dict[$0[keyPath: keyPath]] else { return false }
             guard let otherIndex = dict[$1[keyPath: keyPath]] else { return true }
@@ -114,7 +134,7 @@ public extension Array where Element: Equatable {
     ///
     /// - Parameter path: Key path to compare, the value must be Equatable.
     /// - Returns: an array of unique elements.
-    func withoutDuplicates<E: Equatable>(keyPath path: KeyPath<Element, E>) -> [Element] {
+    func withoutDuplicates(keyPath path: KeyPath<Element, some Equatable>) -> [Element] {
         return reduce(into: [Element]()) { result, element in
             if !result.contains(where: { $0[keyPath: path] == element[keyPath: path] }) {
                 result.append(element)

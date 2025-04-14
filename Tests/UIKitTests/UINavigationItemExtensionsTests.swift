@@ -1,4 +1,4 @@
-// UINavigationItemExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UINavigationItemExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,6 +6,7 @@ import XCTest
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
 
+@MainActor
 final class UINavigationItemExtensionsTests: XCTestCase {
     func testReplaceTitle() {
         let navigationItem = UINavigationItem()

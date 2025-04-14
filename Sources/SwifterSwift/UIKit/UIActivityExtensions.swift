@@ -1,4 +1,4 @@
-// UIActivityExtensions.swift - Copyright 2020 SwifterSwift
+// UIActivityExtensions.swift - Copyright 2025 SwifterSwift
 
 #if canImport(UIKit) && os(iOS)
 import UIKit
@@ -6,16 +6,16 @@ import UIKit
 // MARK: - ActivityType
 
 public extension UIActivity.ActivityType {
-    /// SwifterSwift: AddToiCloudDrive
+    /// SwifterSwift: AddToiCloudDrive.
     static let addToiCloudDrive = UIActivity.ActivityType("com.apple.CloudDocsUI.AddToiCloudDrive")
 
-    /// SwifterSwift: WhatsApp share extension
+    /// SwifterSwift: WhatsApp share extension.
     static let postToWhatsApp = UIActivity.ActivityType("net.whatsapp.WhatsApp.ShareExtension")
 
-    /// SwifterSwift: LinkedIn share extension
+    /// SwifterSwift: LinkedIn share extension.
     static let postToLinkedIn = UIActivity.ActivityType("com.linkedin.LinkedIn.ShareExtension")
 
-    /// SwifterSwift: XING share extension
+    /// SwifterSwift: XING share extension.
     static let postToXing = UIActivity.ActivityType("com.xing.XING.Xing-Share")
 }
 

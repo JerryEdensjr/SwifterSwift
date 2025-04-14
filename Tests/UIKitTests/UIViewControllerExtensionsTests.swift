@@ -1,4 +1,4 @@
-// UIViewControllerExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UIViewControllerExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,6 +6,7 @@ import XCTest
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
 
+@MainActor
 final class UIViewControllerExtensionsTests: XCTestCase {
     class MockNotificationViewController: UIViewController {
         var notificationFired = false
@@ -178,7 +179,6 @@ final class UIViewControllerExtensionsTests: XCTestCase {
     }
 
     func testPresentPopoverWithDelegate() {
-        // swiftlint:disable:next nesting
         class PopoverDelegate: NSObject, UIPopoverPresentationControllerDelegate {
             func adaptivePresentationStyle(for _: UIPresentationController) -> UIModalPresentationStyle {
                 return .popover

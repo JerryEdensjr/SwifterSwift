@@ -1,4 +1,4 @@
-// SCNBoxExtensionsTests.swift - Copyright 2020 SwifterSwift
+// SCNBoxExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -19,9 +19,9 @@ final class SCNBoxExtensionsTests: XCTestCase {
     }
 
     func testInitWithColor() {
-        let color = Color.red
+        let color = SFColor.red
         let box = SCNBox(width: 1, height: 2, length: 3, chamferRadius: 0, color: color)
-        XCTAssertEqual(box.materials[0].diffuse.contents as? Color, color)
+        XCTAssertEqual(box.materials[0].diffuse.contents as? SFColor, color)
     }
 
     func testInitWithSideLength() {
@@ -37,10 +37,10 @@ final class SCNBoxExtensionsTests: XCTestCase {
     }
 
     func testInitWithSideLengthAndColor() {
-        let color = Color.red
+        let color = SFColor.red
         let box = SCNBox(sideLength: 1, chamferRadius: 0, color: color)
         XCTAssertEqual(box.boundingSize, SCNVector3(1, 1, 1))
-        XCTAssertEqual(box.materials[0].diffuse.contents as? Color, color)
+        XCTAssertEqual(box.materials[0].diffuse.contents as? SFColor, color)
     }
 }
 

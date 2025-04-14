@@ -1,4 +1,4 @@
-// UISwitchExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UISwitchExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,6 +6,7 @@ import XCTest
 #if os(iOS)
 import UIKit
 
+@MainActor
 final class UISwitchExtensionsTests: XCTestCase {
     func testToggle() {
         let frame = CGRect(x: 0, y: 0, width: 100, height: 30)

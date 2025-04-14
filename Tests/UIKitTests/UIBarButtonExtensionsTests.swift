@@ -1,4 +1,4 @@
-// UIBarButtonExtensionsTests.swift - Copyright 2020 SwifterSwift
+// UIBarButtonExtensionsTests.swift - Copyright 2025 SwifterSwift
 
 @testable import SwifterSwift
 import XCTest
@@ -6,6 +6,7 @@ import XCTest
 #if canImport(UIKit) && !os(watchOS)
 import UIKit
 
+@MainActor
 final class UIBarButtonExtensionsTests: XCTestCase {
     func testFlexibleSpace() {
         let space1 = UIBarButtonItem.flexibleSpace
